@@ -1,0 +1,30 @@
+{
+  "name": "tosu-mania-overlay",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "@types/chroma-js": "^3.1.1",
+    "chroma-js": "^3.1.2",
+    "echarts": "^6.0.0",
+    "idb-keyval": "^6.2.2",
+    "osu-classes": "^3.2.0-beta.0",
+    "osu-mania-stable": "^5.0.1",
+    "osu-parsers": "^4.2.0-beta.0",
+    "rosu-pp-js": "https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz",
+    "xxysr-wasm": "0.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.7",
+    "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-plugin-static-copy": "^3.1.2",
+    "vite-plugin-wasm": "^3.5.0",
+    "vitest": "^3.2.4"
+  }
+}

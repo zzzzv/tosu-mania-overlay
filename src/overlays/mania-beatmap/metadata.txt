@@ -1,0 +1,8 @@
+Usecase: ingame
+Name: Mania Beatmap
+Version: 1
+Author: zzzzv
+CompatibleWith: tosu
+Resolution: 500 x 160 ## Width x Height
+authorLinks:  ## Specify links via comma
+Notes: ## some markdown text

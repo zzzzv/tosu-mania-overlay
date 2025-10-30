@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mania StarRating</title>
+    <style>
+      html, body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #app {
+        box-sizing: border-box;
+        display: inline-block;
+        color: #ffffff;
+        background: rgba(0, 33, 71, 0.8);
+      }
+      table {
+        border-collapse: collapse;
+      }
+      th, td {
+        height: 1.5rem;
+        width: 4rem;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.06);
+      }
+      th:first-child, td:first-child {
+        width: 2.5rem;
+      }
+      thead th {
+        opacity: 0.95;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>NM</th>
+            <th>HT</th>
+            <th>DT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SR</td>
+            <td id="sr-nm"></td>
+            <td id="sr-ht"></td>
+            <td id="sr-dt"></td>
+          </tr>
+          <tr>
+            <td>XXY</td>
+            <td id="xxy-nm"></td>
+            <td id="xxy-ht"></td>
+            <td id="xxy-dt"></td>
+          </tr>
+          <tr>
+            <td>Diff</td>
+            <td id="diff-nm"></td>
+            <td id="diff-ht"></td>
+            <td id="diff-dt"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
