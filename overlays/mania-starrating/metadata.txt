@@ -3,6 +3,6 @@ Name: Mania StarRating
 Version: 1
 Author: zzzzv
 CompatibleWith: tosu
-Resolution: 316 x 134
+Resolution: 246 x 110
 authorLinks: https://github.com/zzzzv/tosu-mania-overlay
 Notes: 

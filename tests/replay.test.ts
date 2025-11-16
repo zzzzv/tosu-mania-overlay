@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest';
+import { test } from 'vitest';
 import { readFile } from 'fs/promises';
 import { ManiaReplayFrame, ManiaBeatmap } from 'osu-mania-stable';
 import { osuApi } from '@/osu-api';

@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev:starrating": "cross-env VITE_OVERLAY_NAME=mania-starrating vite build --watch",
-    "dev:beatmap-stats": "cross-env VITE_OVERLAY_NAME=mania-beatmap-stats vite build --watch",
-    "build": "tsc && vite build"
+    "dev": "node scripts/build.js dev",
+    "prod": "node scripts/build.js prod"
   },
   "dependencies": {
     "@types/chroma-js": "^3.1.1",
