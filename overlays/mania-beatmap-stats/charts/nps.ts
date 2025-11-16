@@ -91,7 +91,7 @@ const initChart = () => {
       {
         data: [],
         type: 'line',
-        step: 'start',
+        step: 'end',
         showSymbol: false,
         lineStyle: {
           color: 'red'
@@ -128,7 +128,7 @@ const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
   return data
 }
 
-export const getSv = (beatmap: ManiaBeatmap) => {
+const getSv = (beatmap: ManiaBeatmap) => {
   const endTime = Math.max(
     beatmap.notes.at(-1)?.startTime || 0,
     beatmap.holds.reduce((max, h) => Math.max(max, h.endTime), 0)
@@ -140,7 +140,7 @@ export const getSv = (beatmap: ManiaBeatmap) => {
     data[dp.startTime] = dp.sliderVelocity;
   }
   if (!data[0]) data[0] = 1.0;
-  data[endTime] = beatmap.controlPoints.difficultyPoints.at(-1)?.sliderVelocity || 1.0;
+  data[endTime] = 1.0;
   return data;
 }
 
@@ -149,7 +149,7 @@ export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void 
 
   const nps = getNps(beatmap, countTail);
   const sv = getSv(beatmap);
-  
+  console.log(sv);
   const mapDensity = (value: number): number => {
     if (value <= 1) return value;
     return 1 + (2 / Math.PI) * Math.atan((value - 1) * (Math.PI / 2));

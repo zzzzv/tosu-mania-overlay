@@ -1,6 +1,6 @@
 import { test } from 'vitest';
 import { readFile } from 'fs/promises';
-import { calculateSR, calculateXXYSR } from '../src/lib/star-rating';
+import { calculateSR, calculateXXYSR } from './calculate';
 import { initSync as initRosu } from 'rosu-pp-js';
 import { initSync as initXxy } from 'xxysr-wasm';
 import path from 'path';

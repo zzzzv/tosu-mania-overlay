@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
 import { readFile } from 'fs/promises';
 import { ManiaReplayFrame, ManiaBeatmap } from 'osu-mania-stable';
-import { osuApi } from '@/api';
-import { parseBeatmap, parseReplay } from '@/lib/parsers';
+import { osuApi } from '@/osu-api';
+import { parseBeatmap, parseReplay } from '@/parsers';
 
 const readBeatmap = async (path: string) => {
   const text = await readFile(path, 'utf-8');

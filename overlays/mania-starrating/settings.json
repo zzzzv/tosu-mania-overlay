@@ -1,0 +1,10 @@
+[
+  {
+    "uniqueID": "showInResultScreen",
+    "type": "checkbox",
+    "title": "Show in Result Screen",
+    "description": "Display overlay in result screen.",
+    "options": "",
+    "value": false
+  }
+]

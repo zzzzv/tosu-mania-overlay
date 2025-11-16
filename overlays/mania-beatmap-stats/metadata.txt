@@ -1,0 +1,8 @@
+Usecase: ingame
+Name: Mania Beatmap Stats
+Version: 1
+Author: zzzzv
+CompatibleWith: tosu
+Resolution: 500 x 160
+authorLinks: https://github.com/zzzzv/tosu-mania-overlay
+Notes: 

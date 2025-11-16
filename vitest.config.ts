@@ -7,13 +7,14 @@ const env = loadEnv('test', process.cwd(), '');
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'shared'),
     }
   },
   test: {
     globals: true,
     environment: 'node',
     include: [
+      'overlays/**/*.{test,spec}.{js,ts}',
       'tests/**/*.{test,spec}.{js,ts}',
     ],
     env: {

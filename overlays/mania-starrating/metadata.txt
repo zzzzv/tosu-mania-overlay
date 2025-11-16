@@ -1,0 +1,8 @@
+Usecase: ingame
+Name: Mania StarRating
+Version: 1
+Author: zzzzv
+CompatibleWith: tosu
+Resolution: 316 x 134
+authorLinks: https://github.com/zzzzv/tosu-mania-overlay
+Notes: 

@@ -1,8 +1,0 @@
-Usecase: ingame
-Name: Mania StarRating
-Version: 1
-Author: zzzzv
-CompatibleWith: tosu
-Resolution: 316 x 134 ## Width x Height
-authorLinks:  ## Specify links via comma
-Notes: ## some markdown text

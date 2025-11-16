@@ -10,7 +10,7 @@
     "checkJs": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["shared/*"]
     },
 
     /* Bundler mode */
@@ -28,5 +28,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "tests"],
+  "include": ["shared", "tests", "overlays"],
 }

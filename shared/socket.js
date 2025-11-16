@@ -136,17 +136,9 @@ class WebSocketManager {
    */
   async getBeatmapOsuFile(file_path) {
     try {
-      if (typeof file_path != 'object') {
-        return {
-          error: 'Wrong argument type, should be object with params'
-        };
-      };
-
-
-      const request = await fetch(`${this.host}/files/beatmap/${file_path}`, {
+      const request = await fetch(`http://${this.host}/files/beatmap/${file_path}`, {
         method: "GET",
       });
-
 
       const text = await request.text();
       return text;
