@@ -1,0 +1,8 @@
+Usecase: ingame
+Name: Mania Preview
+Version: 1
+Author: zzzzv
+CompatibleWith: tosu
+Resolution: 800 x 600
+authorLinks: https://github.com/zzzzv/tosu-mania-overlay
+Notes: 

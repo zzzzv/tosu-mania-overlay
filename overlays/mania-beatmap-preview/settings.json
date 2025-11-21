@@ -1,0 +1,18 @@
+[
+  {
+    "uniqueID": "width",
+    "type": "number",
+    "title": "Width",
+    "description": "Width of the overlay.",
+    "options": "",
+    "value": 800
+  },
+  {
+    "uniqueID": "height",
+    "type": "number",
+    "title": "Height",
+    "description": "Height of the overlay.",
+    "options": "",
+    "value": 600
+  }
+]

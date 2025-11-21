@@ -1,9 +1,9 @@
 import { BeatmapDecoder, ScoreDecoder } from 'osu-parsers';
 import { ManiaRuleset, ManiaBeatmap, ManiaReplayConverter } from 'osu-mania-stable';
 
-export const parseBeatmap = (text: string): ManiaBeatmap => {
+export const parseBeatmap = (beatmapContent: string): ManiaBeatmap => {
   const decoder = new BeatmapDecoder();
-  const beatmap = decoder.decodeFromString(text, { parseStoryboard: false });
+  const beatmap = decoder.decodeFromString(beatmapContent, { parseStoryboard: false });
   const ruleset = new ManiaRuleset();
   const converted = ruleset.applyToBeatmap(beatmap);
   return converted;
