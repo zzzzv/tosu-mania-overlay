@@ -1,4 +1,4 @@
-# 只在mania模式用的tosu overlay
+# osu!mania用的tosu overlay
 
 非pp counter，作者不直播，只考虑选图界面和结算界面(还没做)
 
@@ -21,3 +21,9 @@
 ![Mania Beatmap Stats](https://github.com/user-attachments/assets/714e0314-6b3c-4a88-90ca-0276ebd5c524)
 
 浅蓝是米，黄色是面。左图是按列统计，主要用于玩8k时识别7+1。右图上是按时间的note分布，发现没写完的坟图。右图下是SV变化
+
+### Mania Beatmap Preview
+
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/cc06d53e-29c7-4ad6-983f-4b8016b5f009" />
+
+谱面预览
