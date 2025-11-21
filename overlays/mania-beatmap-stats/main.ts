@@ -1,4 +1,4 @@
-import WebSocketManager from '@/socket';
+import WebSocketManager from '@/lib/socket';
 import { parseBeatmap } from '@/parsers';
 import { updateHist, updateNps } from './charts';
 

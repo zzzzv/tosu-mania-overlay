@@ -1,4 +1,4 @@
-import WebSocketManager, {type WEBSOCKET_V2} from '@/socket';
+import WebSocketManager, {type WEBSOCKET_V2} from '@/lib/socket';
 import { getStarRatingsWithCache, type SRMods } from './calculate';
 import chroma from 'chroma-js';
 

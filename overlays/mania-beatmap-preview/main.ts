@@ -1,4 +1,4 @@
-import WebSocketManager, {type WEBSOCKET_V2} from '@/socket';
+import WebSocketManager, {type WEBSOCKET_V2} from '@/lib/socket';
 import { render } from 'mania-svg';
 import { parseBeatmap } from '@/parsers';
 import { Hold } from 'osu-mania-stable';
