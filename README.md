@@ -24,6 +24,6 @@
 
 ### Mania Beatmap Preview
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/cc06d53e-29c7-4ad6-983f-4b8016b5f009" />
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/6771ebd9-7808-4967-9738-1be77c7d7ead" />
 
 谱面预览
