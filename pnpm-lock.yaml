@@ -21,8 +21,8 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       mania-svg:
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.4.2
+        version: 0.4.2
       osu-classes:
         specifier: ^3.2.0-beta.0
         version: 3.2.0-beta.0
@@ -853,9 +853,6 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
-  lodash-es@4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-
   loupe@3.2.1:
     resolution: {integrity: sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ==}
 
@@ -865,8 +862,8 @@ packages:
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
-  mania-svg@0.4.0:
-    resolution: {integrity: sha512-Rqf6LJxGJ3rguBRRY85Zmw4JL1pRh56AQhcq3YLvyNn3ElAXdkPTemieCnSWnBvyeFtFiwGIHdXGJFDQaXIjww==}
+  mania-svg@0.4.2:
+    resolution: {integrity: sha512-KBPrjEGzwOH0kMeQM3nqY2/91EU0JG7Kp5ltcmxWgC+TfAypaLtxAb17TFub6GI/HYPiLkQzckUzoNrOmLdn/Q==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -2071,8 +2068,6 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
-  lodash-es@4.17.21: {}
-
   loupe@3.2.1: {}
 
   lzma-js-simple-v2@1.2.3:
@@ -2083,9 +2078,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  mania-svg@0.4.0:
-    dependencies:
-      lodash-es: 4.17.21
+  mania-svg@0.4.2: {}
 
   math-intrinsics@1.1.0: {}
 

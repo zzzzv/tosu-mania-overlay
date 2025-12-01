@@ -12,7 +12,7 @@
     "chroma-js": "^3.1.2",
     "echarts": "^6.0.0",
     "idb-keyval": "^6.2.2",
-    "mania-svg": "^0.4.0",
+    "mania-svg": "^0.4.2",
     "osu-classes": "^3.2.0-beta.0",
     "osu-mania-stable": "^5.0.1",
     "osu-parsers": "^4.2.0-beta.0",

@@ -104,12 +104,16 @@ const initChart = () => {
   return chart;
 };
 
-const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
-  const startTime = 0;
-  const endTime = Math.max(
+const getEndTime = (beatmap: ManiaBeatmap) => {
+  return Math.max(
     beatmap.notes.at(-1)?.startTime || 0,
     beatmap.holds.reduce((max, h) => Math.max(max, h.endTime), 0)
   );
+}
+
+const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
+  const startTime = 0;
+  const endTime = getEndTime(beatmap);
   const seconds = Math.floor((endTime - startTime) / 1000) + 1;
 
   const data = Array.from({ length: seconds }, () => ({ note: 0, hold: 0 }));
@@ -129,15 +133,18 @@ const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
 }
 
 const getSv = (beatmap: ManiaBeatmap) => {
-  const endTime = Math.max(
-    beatmap.notes.at(-1)?.startTime || 0,
-    beatmap.holds.reduce((max, h) => Math.max(max, h.endTime), 0)
-  );
-
+  const endTime = getEndTime(beatmap);
+  const commonBpm = beatmap.bpm;
   const data: Record<number, number> = {};
 
+  for (const tp of beatmap.controlPoints.timingPoints) {
+    const dp = beatmap.controlPoints.difficultyPointAt(tp.startTime);
+    data[tp.startTime] = tp.bpm / commonBpm * dp.sliderVelocity;
+  }
+
   for (const dp of beatmap.controlPoints.difficultyPoints) {
-    data[dp.startTime] = dp.sliderVelocity;
+    const tp = beatmap.controlPoints.timingPointAt(dp.startTime);
+    data[dp.startTime] = tp.bpm / commonBpm * dp.sliderVelocity;
   }
   if (!data[0]) data[0] = 1.0;
   data[endTime] = 1.0;
