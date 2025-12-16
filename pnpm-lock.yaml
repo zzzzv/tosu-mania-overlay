@@ -21,8 +21,8 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       mania-svg:
-        specifier: ^0.4.2
-        version: 0.4.2
+        specifier: ^0.4.3
+        version: 0.4.3
       osu-classes:
         specifier: ^3.2.0-beta.0
         version: 3.2.0-beta.0
@@ -862,8 +862,8 @@ packages:
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
-  mania-svg@0.4.2:
-    resolution: {integrity: sha512-KBPrjEGzwOH0kMeQM3nqY2/91EU0JG7Kp5ltcmxWgC+TfAypaLtxAb17TFub6GI/HYPiLkQzckUzoNrOmLdn/Q==}
+  mania-svg@0.4.3:
+    resolution: {integrity: sha512-5wY9521Qi6+upjrQqnERUNqrrLHeDuQYMyqtI+hCQp4Smn2mQndEUg3B+Ln56jkw1q8wzmQebKbDzfTWbPGWCw==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -2078,7 +2078,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  mania-svg@0.4.2: {}
+  mania-svg@0.4.3: {}
 
   math-intrinsics@1.1.0: {}
 

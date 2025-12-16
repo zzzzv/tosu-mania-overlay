@@ -26,7 +26,7 @@ const renderSVG = async () => {
   const mania = parseBeatmap(beatmapContent);
   const data = {
     keys: mania.difficulty.circleSize,
-    objects: mania.hitObjects.map(obj => ({
+    notes: mania.hitObjects.map(obj => ({
       start: obj.startTime,
       end: obj instanceof Hold ? obj.endTime : undefined,
       column: obj.column,
