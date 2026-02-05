@@ -2,6 +2,7 @@ import WebSocketManager, {type WEBSOCKET_V2} from '@/lib/socket';
 import { render } from 'mania-svg';
 import { parseBeatmap } from '@/parsers';
 import { Hold } from 'osu-mania-stable';
+import { lruGet, lruSet } from '@/lru-cache';
 
 const cache = {
   checksum: '',
@@ -18,6 +19,15 @@ const changeVisibility = () => {
 }
 
 const renderSVG = async () => {
+  const cacheKey = `svg:${cache.width}x${cache.height}:${cache.checksum}`;
+
+  const cached = await lruGet<string>(cacheKey);
+  if (cached) {
+    console.log(`Cache hit ${cacheKey}`);
+    app.innerHTML = cached;
+    return;
+  }
+  const startTime = performance.now();
   const beatmapContent = await socket.getBeatmapOsuFile('file');
   if (typeof beatmapContent !== 'string') {
     console.log(`Failed to get beatmap file: ${beatmapContent}`);
@@ -48,7 +58,16 @@ const renderSVG = async () => {
       targetSize: [cache.width, cache.height],
     }
   });
+
+  const duration = performance.now() - startTime;
+  console.log(`Rendered SVG in ${duration.toFixed(2)} ms`);
+
   app.innerHTML = svg;
+
+  if (duration > 300) {
+    await lruSet(cacheKey, svg);
+    console.log(`Cache set ${cacheKey}`);
+  }
 }
 
 const socket = new WebSocketManager(window.location.host);

@@ -53,16 +53,20 @@ export const getStarRatingsWithCache = async (beatmapContent: string, cacheKey: 
   if (cacheKey) {
     const cached = await get(`${cacheKey}`);
     if (cached) {
+      console.log(`Cache hit ${cacheKey}`);
       return cached;
     }
   }
+  const startTime = performance.now();
   const [sr, xxy] = await Promise.all([
     calculateSR(beatmapContent),
     calculateXXYSR(beatmapContent)
   ]);
   const result = { sr, xxy };
+  console.log(`Calculated SR in ${(performance.now() - startTime).toFixed(2)} ms`);
   if (cacheKey) {
     await set(`${cacheKey}`, result);
+    console.log(`Cache set ${cacheKey}`);
   }
   return result;
 }

@@ -73,7 +73,8 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
       console.log(data);
       const text = await socket.getBeatmapOsuFile('file');
       if (typeof text === 'string') {
-        renderTable(text, data.beatmap.checksum);
+        const cacheKey = `sr-${data.beatmap.checksum}`;
+        renderTable(text, cacheKey);
       }
     }
   } catch (error) {
