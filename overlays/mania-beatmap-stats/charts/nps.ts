@@ -148,7 +148,11 @@ const getSv = (beatmap: ManiaBeatmap) => {
   }
   if (!data[0]) data[0] = 1.0;
   data[endTime] = 1.0;
-  return data;
+  
+  const sorted = Object.entries(data)
+    .map(([time, velocity]) => [Number(time), velocity])
+    .sort((a, b) => a[0] - b[0]);
+  return sorted;
 }
 
 export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void => {
@@ -156,7 +160,7 @@ export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void 
 
   const nps = getNps(beatmap, countTail);
   const sv = getSv(beatmap);
-  console.log(sv);
+
   const mapDensity = (value: number): number => {
     if (value <= 1) return value;
     return 1 + (2 / Math.PI) * Math.atan((value - 1) * (Math.PI / 2));
@@ -179,8 +183,8 @@ export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void 
         data: nps.map(x => x.hold),
       },
       {
-        data: Object.entries(sv).map(([time, velocity]) => [
-          Number(time),
+        data: sv.map(([time, velocity]) => [
+          time,
           mapDensity(velocity)
         ]),
       }
