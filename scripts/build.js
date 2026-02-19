@@ -3,6 +3,7 @@ import fs from 'fs';
 
 const mode = process.argv[2];
 const overlayName = process.argv[3];
+let needTsc = mode === 'build';
 
 const overlays = fs.readdirSync('overlays', { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
@@ -15,11 +16,16 @@ if (mode === 'dev' && !overlayName) {
   process.exit(1);
 }
 
-const selectedOverlays = mode === 'prod' && !overlayName ? overlays : [overlayName];
+const selectedOverlays = mode === 'build' && !overlayName ? overlays : [overlayName];
 
 function buildOverlay(name) {
   return new Promise((resolve, reject) => {
-    let command = mode === 'prod' ? 'tsc && vite build' : 'vite build';
+    let command = 'vite build';
+    if (needTsc) {
+      command = 'tsc && ' + command;
+      console.log('First build may take a while due to tsc');
+      needTsc = false;
+    }
     if (mode === 'dev') command += ' --watch';
 
     const child = spawn(command, [], {
