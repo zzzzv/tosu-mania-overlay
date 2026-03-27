@@ -1,8 +1,7 @@
 import { test } from 'vitest';
 import { readFile } from 'fs/promises';
-import { calculateSR, calculateXXYSR } from './calculate';
-import initRosu from 'rosu-pp-js';
-import initXxy from 'xxysr-wasm';
+import { calculateRosuSR, ensureRosuInitialized } from './rosu-sr';
+import { calculateXxySR, ensureXxyInitialized } from './xxy-sr';
 import path from 'path';
 
 const FIXTURE_ROOT = process.env.FIXTURE_DIR;
@@ -14,19 +13,19 @@ const fixtureDir = path.join(FIXTURE_ROOT, 'score-635785967');
 test('SR', async () => {
   const wasmPath = require.resolve('rosu-pp-js/rosu_pp_js_bg.wasm');
   const wasmBuffer = await readFile(wasmPath);
-  await initRosu(wasmBuffer);
+  await ensureRosuInitialized(wasmBuffer);
 
   const text = await readFile(`${fixtureDir}/beatmap.osu`, 'utf-8');
-  const sr = await calculateSR(text);
+  const sr = await calculateRosuSR(text);
   console.log(sr);
 });
 
 test('XXY SR', async () => {
   const wasmPath = require.resolve('xxysr-wasm/xxysr_wasm_bg.wasm');
   const wasmBuffer = await readFile(wasmPath);
-  await initXxy(wasmBuffer);
+  await ensureXxyInitialized(wasmBuffer);
 
   const text = await readFile(`${fixtureDir}/beatmap.osu`, 'utf-8');
-  const sr = await calculateXXYSR(text);
+  const sr = await calculateXxySR(text);
   console.log(sr);
 });

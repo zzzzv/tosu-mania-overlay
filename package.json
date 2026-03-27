@@ -10,6 +10,7 @@
   "dependencies": {
     "@types/chroma-js": "^3.1.1",
     "chroma-js": "^3.1.2",
+    "comlink": "^4.4.2",
     "echarts": "^6.0.0",
     "idb-keyval": "^6.2.2",
     "mania-svg": "^0.4.5",
