@@ -22,7 +22,7 @@ jobs:
         cache: 'pnpm'
     
     - run: pnpm install --frozen-lockfile
-    - run: pnpm run prod
+    - run: pnpm run build
 
     - name: Create zip
       run: |
