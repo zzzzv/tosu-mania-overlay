@@ -48,7 +48,7 @@ const changeVisibility = () => {
 const socket = new WebSocketManager(window.location.host);
 
 socket.sendCommand('getSettings', window.COUNTER_PATH);
-socket.commands((data: any) => {
+socket.commands((data) => {
   try {
     const { command, message } = data;
     if (command === 'getSettings') {

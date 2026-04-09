@@ -1,0 +1,26 @@
+[
+  {
+    "uniqueID": "width",
+    "type": "number",
+    "title": "Width",
+    "description": "Width of the overlay.",
+    "options": "",
+    "value": 800
+  },
+  {
+    "uniqueID": "height",
+    "type": "number",
+    "title": "Height",
+    "description": "Height of the overlay.",
+    "options": "",
+    "value": 400
+  },
+  {
+    "uniqueID": "animationDuration",
+    "type": "number",
+    "title": "Animation Duration",
+    "description": "Duration of the overlay animation in milliseconds.",
+    "options": "",
+    "value": 1000
+  }
+]

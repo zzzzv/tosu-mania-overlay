@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mania Hidden</title>
+    <style>
+      html, body {
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+      #app {
+        position: relative;
+        overflow: hidden;
+        width: 800px;
+        height: 400px;
+        opacity: 0;
+        transition: opacity 200ms ease;
+      }
+      #mask {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        bottom: 0;
+        background: #000000;
+        transition: top 1000ms linear;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="mask"></div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

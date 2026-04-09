@@ -20,7 +20,7 @@ const changeVisibility = () => {
 const socket = new WebSocketManager(window.location.host);
 
 socket.sendCommand('getSettings', window.COUNTER_PATH);
-socket.commands((data: any) => {
+socket.commands((data) => {
   try {
     const { command, message } = data;
     if (command === 'getSettings') {
@@ -34,7 +34,7 @@ socket.commands((data: any) => {
   };
 });
 
-socket.api_v2(async (data: any) => {
+socket.api_v2(async (data) => {
   try {
     if (cache.stateName !== data.state.name) {
       cache.stateName = data.state.name;

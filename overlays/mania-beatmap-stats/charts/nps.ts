@@ -111,7 +111,7 @@ const getEndTime = (beatmap: ManiaBeatmap) => {
   );
 }
 
-const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
+export const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
   const startTime = 0;
   const endTime = getEndTime(beatmap);
   const seconds = Math.floor((endTime - startTime) / 1000) + 1;
@@ -132,7 +132,9 @@ const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
   return data
 }
 
-const getSv = (beatmap: ManiaBeatmap) => {
+export type SvPoint = [time: number, velocity: number];
+
+export const getSv = (beatmap: ManiaBeatmap) => {
   const endTime = getEndTime(beatmap);
   const commonBpm = beatmap.bpm;
   const data: Record<number, number> = {};
@@ -149,8 +151,8 @@ const getSv = (beatmap: ManiaBeatmap) => {
   if (!data[0]) data[0] = 1.0;
   data[endTime] = 1.0;
   
-  const sorted = Object.entries(data)
-    .map(([time, velocity]) => [Number(time), velocity])
+  const sorted: SvPoint[] = Object.entries(data)
+    .map(([time, velocity]): SvPoint => [Number(time), velocity])
     .sort((a, b) => a[0] - b[0]);
   return sorted;
 }

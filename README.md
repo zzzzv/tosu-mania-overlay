@@ -12,13 +12,13 @@
 
 ### Mania StarRating
 
-![Mania StarRating](https://github.com/user-attachments/assets/e7a55f58-be2e-4467-816f-6cd24eeddecf)
+![Mania StarRating](./assets/mania-starrating.png)
 
 比较原始SR和XXY SR，找PP图用
 
 ### Mania Beatmap Stats
 
-![Mania Beatmap Stats](https://github.com/user-attachments/assets/714e0314-6b3c-4a88-90ca-0276ebd5c524)
+![Mania Beatmap Stats](./assets/mania-beatmap-stats.png)
 
 浅蓝是米，黄色是面。左图是按列统计，主要用于玩8k时识别7+1。右图上是按时间的note分布，发现没写完的坟图。右图下是SV变化
 
@@ -27,3 +27,7 @@
 <img width="600" alt="image" src="https://raw.githubusercontent.com/zzzzv/tosu-mania-overlay/main/assets/preview.svg" />
 
 谱面预览
+
+### Mania Hidden
+
+全黑下隐挡板，根据当前时间对应的 SV 改变挡板的遮盖比例。可以设置 width、height 和动画时间
