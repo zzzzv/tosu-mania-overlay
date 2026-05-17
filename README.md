@@ -28,6 +28,15 @@
 
 谱面预览
 
+### Mania Result
+
+![Mania Result](./assets/mania-result.png)
+
+准确率时间变化图，上是累积图，中是10秒时间窗口，下是按空白段分段累积(用于段位)
+当前有CORS问题不能用
+
 ### Mania Hidden
 
 全黑下隐挡板，根据当前时间对应的 SV 改变挡板的遮盖比例。可以设置 width、height 和动画时间
+
+我自己打着一坨，用不来

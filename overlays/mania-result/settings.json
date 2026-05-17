@@ -1,0 +1,18 @@
+[
+  {
+    "uniqueID": "clientID",
+    "type": "text",
+    "title": "Client ID",
+    "description": "Osu OAuth Client ID",
+    "options": "",
+    "value": ""
+  },
+  {
+    "uniqueID": "clientSecret",
+    "type": "password",
+    "title": "Client Secret",
+    "description": "Osu OAuth Client Secret",
+    "options": "",
+    "value": ""
+  }
+]
