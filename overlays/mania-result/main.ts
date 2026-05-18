@@ -1,25 +1,29 @@
 import WebSocketManager from '@/lib/socket';
 import { get, set } from 'idb-keyval';
-import { osuApi } from '@/osu-api';
+import { fetchReplayLZMA, encodeScoreBuffer } from '@/osu-api';
 import { v1 } from 'mania-judge';
 import { parse } from 'mania-judge/osu-parsers';
+import { StatusPanel } from '@/status-panel';
 import { updateTimeline } from './charts';
 
 const cache = {
-  checksum: '',
   scoreId: -1,
   stateName: '',
-  isAuthenticated: false,
+  settings: {
+    apiKey: '',
+    stepMs: 1000,
+    windowMs: 10000,
+    gapMs: 6000
+  }
 };
 
 const app = document.getElementById('app')!;
-const statusPanel = document.getElementById('status-panel')!;
+const timeline = document.getElementById('timeline')!;
+const statusPanel = new StatusPanel(document.getElementById('status-panel')!);
+statusPanel.bindContent(timeline);
 
-function showBanner(message: string, state: 'error' | 'loading') {
-  statusPanel.textContent = message;
-  statusPanel.classList.add('is-visible');
-  statusPanel.classList.toggle('is-loading', state === 'loading');
-  statusPanel.classList.toggle('is-error', state === 'error');
+function showBanner(message: string, type: 'info' | 'error') {
+  statusPanel.set(message, type);
   app.style.opacity = '1';
 }
 
@@ -36,14 +40,11 @@ function showError(error: unknown) {
 }
 
 function showLoading(message: string) {
-  showBanner(message, 'loading');
+  showBanner(message, 'info');
 }
 
 function clearStatus() {
-  statusPanel.textContent = '';
-  statusPanel.classList.remove('is-visible');
-  statusPanel.classList.remove('is-loading');
-  statusPanel.classList.remove('is-error');
+  statusPanel.clear();
   app.style.opacity = cache.stateName === 'resultScreen' ? '1' : '0';
 }
 
@@ -54,24 +55,7 @@ socket.commands((data) => {
   try {
     const { command, message } = data;
     if (command === 'getSettings') {
-      if (!cache.isAuthenticated) {
-        const { clientID, clientSecret } = message;
-
-        if (clientID && clientSecret) {
-          osuApi.auth(clientID, clientSecret)
-            .then(() => {
-              cache.isAuthenticated = true;
-              clearStatus();
-            })
-            .catch((error) => {
-              showError(error);
-              console.log(error);
-            });
-        } else {
-          showError('Client ID or Client Secret not provided in settings.');
-          console.log('Client ID or Client Secret not provided in settings.');
-        }
-      }
+      cache.settings = { ...cache.settings, ...message };
     }
   } catch (error) {
     showError(error);
@@ -89,35 +73,38 @@ socket.api_v2(async (data) => {
       }
     }
 
-    if (!cache.isAuthenticated) {
+    if (!cache.settings.apiKey) {
+      showError('API key is not set. Please set it in the settings.');
       return;
     }
     
-    if (cache.checksum !== data.beatmap.checksum &&
-        cache.scoreId !== data.resultsScreen.scoreId &&
+    if (cache.scoreId !== data.resultsScreen.scoreId &&
         data.state.name === 'resultScreen') {
-      cache.checksum = data.beatmap.checksum;
-      cache.scoreId = data.resultsScreen.scoreId;
       console.log(data);
+
+      if (data.resultsScreen.scoreId > 0) {
+        cache.scoreId = data.resultsScreen.scoreId;
+      } else {
+        showError('No valid score ID found');
+        return;
+      }
       
       const beatmapContent = await socket.getBeatmapOsuFile('file');
       if (typeof beatmapContent === 'string') {
         const cacheKey = `replay-${data.resultsScreen.scoreId}`;
-        let replayBuffer = await get(cacheKey);
-        if (!replayBuffer) {
+        let lzmaData = await get(cacheKey);
+        if (!lzmaData) {
           showLoading('Downloading replay from osu! API...');
-          replayBuffer = await osuApi.getScore('mania', data.resultsScreen.scoreId);
-          await set(cacheKey, replayBuffer);
+          lzmaData = await fetchReplayLZMA(cache.settings.apiKey, data.resultsScreen.mode.number, data.resultsScreen.scoreId);
+          await set(cacheKey, lzmaData);
           console.log('Replay data fetched from osu! API and stored in IndexedDB');
-        } else {
-          showLoading('Loading replay from IndexedDB...');
-          console.log('Replay data fetched from IndexedDB');
         }
         showLoading('Parsing replay data...');
-        const { osuData } = await parse(beatmapContent, replayBuffer);
+        const scoreBuffer = encodeScoreBuffer(data, lzmaData);
+        const { osuData } = await parse(beatmapContent, scoreBuffer);
         clearStatus();
         const judgements = v1.playOsu(osuData);
-        updateTimeline(judgements, 10000, 6000, 1000);
+        updateTimeline(judgements, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
       }
     }
   } catch (error) {

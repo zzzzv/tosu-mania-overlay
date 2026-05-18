@@ -1,38 +1,51 @@
-let token: string | null = null;
+import type { WEBSOCKET_V2 } from '@/lib/socket';
+import { BinaryWriter } from 'osu-binary';
+import { ManiaModCombination } from 'osu-mania-stable';
 
-const auth = async (clientId: string, clientSecret: string) => {
-  const body = `client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials&scope=public`;
-
-  const resp = await fetch('https://osu.ppy.sh/oauth/token', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body,
+export async function fetchReplayLZMA(key: string, mode: number, scoreId: number) {
+  const query = new URLSearchParams({ 
+    k: key, 
+    m: mode.toString(),
+    s: scoreId.toString() 
   });
+
+  const resp = await fetch(`https://osu.ppy.sh/api/get_replay?${query.toString()}`);
   if (!resp.ok) {
-    throw new Error(`Failed to authenticate: ${resp.status} ${resp.statusText}`);
+    throw new Error(`Failed to fetch replay: ${resp.status} ${resp.statusText}`);
   }
+  
   const json = await resp.json();
-  token = json.access_token;
+  return base64ToBytes(json.content);
 }
 
-const getScore = async (mode: string, scoreId: number) => {
-  if (!token) {
-    throw new Error('Not authenticated. Call auth() first.');
+function base64ToBytes(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
-  const resp = await fetch(`https://osu.ppy.sh/api/v2/scores/${mode}/${scoreId}/download`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
-  return await resp.arrayBuffer();
+  return bytes;
 }
 
-export const osuApi = {
-  auth,
-  getScore,
+const LASTEST_VERSION = 20250107;
+
+export function encodeScoreBuffer(data: WEBSOCKET_V2, lzmaData: Uint8Array) {
+  const w = new BinaryWriter();
+  w.writeByte(data.resultsScreen.mode.number);
+  w.writeInt32(LASTEST_VERSION);
+  w.writeString(data.beatmap.checksum);
+  w.writeString(data.profile.name);
+  w.writeString('');
+  for (let i = 0; i < 19; i++) {
+    w.writeByte(0);
+  }
+  const mods = new ManiaModCombination(data.resultsScreen.mods.array.map(m => m.acronym).join(''));
+  console.log(mods.bitwise);
+  w.writeInt32(mods.bitwise);
+  w.writeString('');
+  w.writeInt64(0n);
+  w.writeInt32(lzmaData.length);
+  w.writeBytes(lzmaData);
+  w.writeInt64(BigInt(data.resultsScreen.scoreId));
+  return w.toUint8Array();
 }

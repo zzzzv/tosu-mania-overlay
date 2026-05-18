@@ -1,40 +1,32 @@
 import { test } from 'vitest';
-import { readFile } from 'fs/promises';
-import { ManiaReplayFrame, ManiaBeatmap } from 'osu-mania-stable';
-import { osuApi } from '@/osu-api';
-import { parseBeatmap, parseReplay } from '@/parsers';
-
-const readBeatmap = async (path: string) => {
-  const text = await readFile(path, 'utf-8');
-  return parseBeatmap(text);
-}
-
-const readReplay = async (path: string, beatmap: ManiaBeatmap) => {
-  const buffer = await readFile(path);
-  return parseReplay(buffer, beatmap);
-}
+import { readFile, writeFile } from 'fs/promises';
+import { fetchReplayLZMA, encodeScoreBuffer } from '@/osu-api';
+import type { WEBSOCKET_V2 } from '@/lib/socket';
+import { ScoreDecoder } from 'osu-parsers';
 
 const fixtureDir = 'tests/fixtures/score-635785967';
 
-test('api v2', async () => {
-  const clientId = process.env.OSU_CLIENT_ID;
-  const clientSecret = process.env.OSU_CLIENT_SECRET;
+test('api v1', async () => {
+  const apiKey = process.env.OSU_API_KEY;
 
-  if (!clientId || !clientSecret) {
-    throw new Error('Missing OSU_CLIENT_ID or OSU_CLIENT_SECRET in .env file');
+  if (!apiKey) {
+    throw new Error('Missing OSU_API_KEY in .env file');
   }
 
-  await osuApi.auth(clientId, clientSecret);
-  const rawScore = await osuApi.getScore('mania', 635785967);
-  const beatmap = await readBeatmap(`${fixtureDir}/beatmap.osu`);
-  const score = await parseReplay(rawScore, beatmap);
-  console.log(score);
+  const data: WEBSOCKET_V2 = await readFile(`${fixtureDir}/v2.json`, 'utf-8').then(JSON.parse);
+
+  const lzmaData = await fetchReplayLZMA(apiKey, data.resultsScreen.mode.number, data.resultsScreen.scoreId);
+  await writeFile(`${fixtureDir}/replay.lzma`, lzmaData);
+  
+  console.log(lzmaData);
 });
 
 test('decodeReplay', async () => {
-  const beatmap = await readBeatmap(`${fixtureDir}/beatmap.osu`);
-  const replay = await readReplay(`${fixtureDir}/replay.osr`, beatmap);
-  console.log(Array.from(replay.frames)
-    .filter(p => (p as ManiaReplayFrame)
-    .actions.size > 0).slice(0, 100));
+  const data: WEBSOCKET_V2 = await readFile(`${fixtureDir}/v2.json`, 'utf-8').then(JSON.parse);
+  const lzmaData = await readFile(`${fixtureDir}/replay.lzma`);
+  const scoreBuffer = encodeScoreBuffer(data, lzmaData);
+  const score = await new ScoreDecoder().decodeFromBuffer(scoreBuffer, true);
+  console.log(score);
+  //const beatmap = await readBeatmap(`${fixtureDir}/beatmap.osu`);
+
 });
