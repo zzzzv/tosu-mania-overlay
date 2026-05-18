@@ -29,6 +29,9 @@ importers:
       mania-svg:
         specifier: ^0.4.5
         version: 0.4.5
+      osu-binary:
+        specifier: ^0.1.0
+        version: 0.1.0
       osu-classes:
         specifier: ^3.2.0-beta.0
         version: 3.2.0-beta.0
@@ -950,6 +953,9 @@ packages:
 
   os-browserify@0.3.0:
     resolution: {integrity: sha512-gjcpUc3clBf9+210TRaDWbf+rZZZEshZ+DlXMRCeAjp0xhTrnQsKHypIy1J3d5hKdUzj69t708EHtU8P6bUn0A==}
+
+  osu-binary@0.1.0:
+    resolution: {integrity: sha512-xsxnV29DN/DkoAlG383rJwAlkyfBaH/U7iRLtm0gVp8JEeduU4stqC+LcgfhbSb6uHH/h2X8UTLcPM4iJy6EZg==}
 
   osu-classes@3.2.0-beta.0:
     resolution: {integrity: sha512-w7t1tqDoeQJM3IorPs0CXadcxZ5kx/hC/LwcJMVhD9zLZOTnTVjADKkRS5a0VvzPmCKeec1sAQYFNHoNgN5z7A==}
@@ -2194,6 +2200,8 @@ snapshots:
       object-keys: 1.1.1
 
   os-browserify@0.3.0: {}
+
+  osu-binary@0.1.0: {}
 
   osu-classes@3.2.0-beta.0: {}
 

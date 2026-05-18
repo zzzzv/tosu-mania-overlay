@@ -15,6 +15,7 @@
     "idb-keyval": "^6.2.2",
     "mania-judge": "^0.1.0",
     "mania-svg": "^0.4.5",
+    "osu-binary": "^0.1.0",
     "osu-classes": "^3.2.0-beta.0",
     "osu-mania-stable": "^5.0.1",
     "osu-parsers": "^4.2.0-beta.0",

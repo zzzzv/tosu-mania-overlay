@@ -14,6 +14,15 @@ function formatPercentage(value: number | null) {
   return `${(value * 100).toFixed(2).replace(/\.0+$|(?<=\.[0-9]*[1-9])0+$/, '')}%`;
 }
 
+function formatIntegerPercentageAxisLabel(value: number) {
+  const percentage = value * 100;
+  if (!Number.isInteger(percentage)) {
+    return '';
+  }
+
+  return `${percentage}%`;
+}
+
 function getSegmentEndMarkers(series: AccuracyPoint[]) {
   return series.flatMap((point, index) => {
     const [, value] = point;
@@ -112,7 +121,7 @@ function initChart() {
         axisLabel: {
           margin: 4,
           showMaxLabel: false,
-          formatter: formatPercentage,
+          formatter: formatIntegerPercentageAxisLabel,
         }
       },
       {
@@ -126,7 +135,7 @@ function initChart() {
         axisLabel: {
           margin: 4,
           showMaxLabel: false,
-          formatter: formatPercentage,
+          formatter: formatIntegerPercentageAxisLabel,
         }
       },
       {
@@ -140,7 +149,7 @@ function initChart() {
         axisLabel: {
           margin: 4,
           showMaxLabel: false,
-          formatter: formatPercentage,
+          formatter: formatIntegerPercentageAxisLabel,
         }
       }
     ],

@@ -1,18 +1,34 @@
 [
   {
-    "uniqueID": "clientID",
-    "type": "text",
-    "title": "Client ID",
-    "description": "Osu OAuth Client ID",
+    "uniqueID": "apiKey",
+    "type": "password",
+    "title": "Osu API Key",
+    "description": "Osu API Key (https://osu.ppy.sh/p/api)",
     "options": "",
     "value": ""
   },
   {
-    "uniqueID": "clientSecret",
-    "type": "password",
-    "title": "Client Secret",
-    "description": "Osu OAuth Client Secret",
+    "uniqueID": "stepMs",
+    "type": "number",
+    "title": "Step Milliseconds",
+    "description": "Step size in milliseconds for the timeline (default: 1000ms)",
     "options": "",
-    "value": ""
+    "value": 1000
+  },
+  {
+    "uniqueID": "windowMs",
+    "type": "number",
+    "title": "Window Milliseconds",
+    "description": "Window size in milliseconds for the timeline (default: 10000ms)",
+    "options": "",
+    "value": 10000
+  },
+  {
+    "uniqueID": "gapMs",
+    "type": "number",
+    "title": "Gap Milliseconds",
+    "description": "Gap size in milliseconds for the timeline (default: 6000ms)",
+    "options": "",
+    "value": 6000
   }
 ]
