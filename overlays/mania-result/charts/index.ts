@@ -1,9 +1,9 @@
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { LineChart } from 'echarts/charts';
-import { GridComponent, TitleComponent, MarkPointComponent } from 'echarts/components';
+import { GridComponent, LegendComponent, MarkPointComponent, TitleComponent } from 'echarts/components';
 
-echarts.use([LineChart, GridComponent, CanvasRenderer, TitleComponent, MarkPointComponent]);
+echarts.use([LineChart, GridComponent, CanvasRenderer, TitleComponent, MarkPointComponent, LegendComponent]);
 
 echarts.registerTheme('mania', {
   backgroundColor: 'transparent',

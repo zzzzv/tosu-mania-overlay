@@ -22,8 +22,7 @@ function buildOverlay(name) {
   return new Promise((resolve, reject) => {
     let command = 'vite build';
     if (needTsc) {
-      command = 'tsc && ' + command;
-      console.log('First build may take a while due to tsc');
+      command = 'tsgo && ' + command;
       needTsc = false;
     }
     if (mode === 'dev') command += ' --watch';
