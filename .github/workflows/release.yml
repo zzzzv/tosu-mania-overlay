@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: true
 
     - uses: pnpm/action-setup@v4
       with:
@@ -29,6 +31,13 @@ jobs:
         cd dist
         zip -r ../mania-overlays.zip .
 
+    - name: Download OsuLocalServer release exe
+      run: |
+        LATEST=$(curl -s "https://api.github.com/repos/zzzzv/OsuLocalServer/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
+        echo "Latest OsuLocalServer release: $LATEST"
+        curl -sL "https://github.com/zzzzv/OsuLocalServer/releases/download/$LATEST/OsuLocalServer.Lazer.exe" -o OsuLocalServer.Lazer.exe
+        curl -sL "https://github.com/zzzzv/OsuLocalServer/releases/download/$LATEST/OsuLocalServer.Stable.exe" -o OsuLocalServer.Stable.exe
+
     - name: Get date tag
       id: date
       run: echo "tag=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
@@ -38,7 +47,10 @@ jobs:
       with:
         tag_name: ${{ steps.date.outputs.tag }}
         name: ${{ steps.date.outputs.tag }}
-        files: mania-overlays.zip
+        files: |
+          mania-overlays.zip
+          OsuLocalServer.Lazer.exe
+          OsuLocalServer.Stable.exe
         draft: false
         prerelease: false
       env:

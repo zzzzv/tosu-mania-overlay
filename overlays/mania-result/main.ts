@@ -1,13 +1,15 @@
-import WebSocketManager from '@/lib/socket';
+import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
 import { fetchReplayLZMA, encodeScoreBuffer } from '@/osu-api';
 import { v1 } from 'mania-judge';
 import { parse } from 'mania-judge/osu-parsers';
 import { StatusPanel } from '@/status-panel';
 import { updateTimeline } from './charts';
+import { stable } from '@/local-client';
 
 const cache = {
-  scoreId: -1,
+  beatmapHash: '',
+  resultTime: '',
   stateName: '',
   settings: {
     apiKey: '',
@@ -63,7 +65,7 @@ socket.commands((data) => {
   };
 });
 
-socket.api_v2(async (data) => {
+socket.api_v2(async (data: WEBSOCKET_V2) => {
   try {
     if (cache.stateName !== data.state.name) {
       cache.stateName = data.state.name;
@@ -72,43 +74,57 @@ socket.api_v2(async (data) => {
         clearStatus();
       }
     }
-
-    if (!cache.settings.apiKey) {
-      showError('API key is not set. Please set it in the settings.');
+    
+    if (cache.beatmapHash === data.beatmap.checksum &&
+        cache.resultTime === data.resultsScreen.createdAt ||
+        data.state.name !== 'resultScreen') return;
+    
+    cache.beatmapHash = data.beatmap.checksum;
+    cache.resultTime = data.resultsScreen.createdAt;
+    console.log(data);
+      
+    const beatmapContent = await socket.getBeatmapOsuFile('file');
+    if (typeof beatmapContent !== 'string') {
+      showError('Failed to load beatmap content.');
       return;
     }
-    
-    if (cache.scoreId !== data.resultsScreen.scoreId &&
-        data.state.name === 'resultScreen') {
-      console.log(data);
 
-      if (data.resultsScreen.scoreId > 0) {
-        cache.scoreId = data.resultsScreen.scoreId;
-      } else {
-        showError('No valid score ID found');
-        return;
-      }
-      
-      const beatmapContent = await socket.getBeatmapOsuFile('file');
-      if (typeof beatmapContent === 'string') {
-        const cacheKey = `replay-${data.resultsScreen.scoreId}`;
-        let lzmaData = await get(cacheKey);
-        if (!lzmaData) {
-          showLoading('Downloading replay from osu! API...');
-          lzmaData = await fetchReplayLZMA(cache.settings.apiKey, data.resultsScreen.mode.number, data.resultsScreen.scoreId);
-          await set(cacheKey, lzmaData);
-          console.log('Replay data fetched from osu! API and stored in IndexedDB');
-        }
-        showLoading('Parsing replay data...');
-        const scoreBuffer = encodeScoreBuffer(data, lzmaData);
-        const { osuData } = await parse(beatmapContent, scoreBuffer);
-        clearStatus();
-        const judgements = v1.playOsu(osuData);
-        updateTimeline(judgements, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
-      }
-    }
+    const scoreBuffer = await getReplayData(data);
+    const { osuData } = await parse(beatmapContent, scoreBuffer);
+    clearStatus();
+    const judgements = v1.playOsu(osuData);
+    updateTimeline(judgements, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
   } catch (error) {
     showError(error);
     console.log(error);
   };
 }, []);
+
+async function getReplayData(data: WEBSOCKET_V2) {
+  try {
+    if (data.client === 'stable') {
+
+      return await stable.getReplayFileWildcard(data.beatmap.checksum, new Date(data.resultsScreen.createdAt));
+    } else {
+      // Lazer replay fetching not implemented yet
+      throw new Error('Lazer replay fetching not implemented yet');
+    }
+  } catch (error) {
+    if (data.resultsScreen.scoreId > 0) {
+      if (!cache.settings.apiKey) {
+        throw new Error('API key is required to fetch replay data from osu! API');
+      }
+      const cacheKey = `replay-${data.resultsScreen.scoreId}`;
+      let lzmaData = await get(cacheKey);
+      if (!lzmaData) {
+        showLoading('Downloading replay from osu! API...');
+        lzmaData = await fetchReplayLZMA(cache.settings.apiKey, data.resultsScreen.mode.number, data.resultsScreen.scoreId);
+        await set(cacheKey, lzmaData);
+        console.log('Replay data fetched from osu! API and stored in IndexedDB');
+      }
+      showLoading('Parsing replay data...');
+      return encodeScoreBuffer(data, lzmaData);
+    }
+    throw new Error('Replay data not found in stable scores.db and score ID is not available for API fetch');
+  }
+}

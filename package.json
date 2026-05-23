@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build.js dev",
-    "build": "node scripts/build.js build"
+    "dev:lazer": "dotnet watch run --project OsuLocalServer/Lazer",
+    "dev:stable": "dotnet watch run --project OsuLocalServer/Stable",
+    "build": "node scripts/build.js build",
+    "publish:lazer": "dotnet publish OsuLocalServer/Lazer --configuration Release",
+    "publish:stable": "dotnet publish OsuLocalServer/Stable --configuration Release"
   },
   "dependencies": {
     "@types/chroma-js": "^3.1.1",
@@ -19,6 +23,7 @@
     "osu-classes": "^3.2.0-beta.0",
     "osu-mania-stable": "^5.0.1",
     "osu-parsers": "^4.2.0-beta.0",
+    "osu-stable-db": "^0.2.5",
     "rosu-pp-js": "https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz",
     "xxysr-wasm": "0.1.4"
   },

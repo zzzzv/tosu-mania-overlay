@@ -41,6 +41,9 @@ importers:
       osu-parsers:
         specifier: ^4.2.0-beta.0
         version: 4.2.0-beta.0(osu-classes@3.2.0-beta.0)
+      osu-stable-db:
+        specifier: ^0.2.5
+        version: 0.2.5
       rosu-pp-js:
         specifier: https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz
         version: https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz
@@ -1019,6 +1022,9 @@ packages:
     resolution: {integrity: sha512-+V8Ev6G/C6MPd12lLJLvINV1Z5+/E8Kx2BovMUDi6BZsqtZNjzP2QkT3GOtl0T1fN0WkoJYAdjjqAPNwyjZAFQ==}
     peerDependencies:
       osu-classes: ^3.2.0-beta.0
+
+  osu-stable-db@0.2.5:
+    resolution: {integrity: sha512-M5PP/lNj8BuAWoBhdRO+7U7DZUEyZQfVv2IUAb502Xl+AXML/hjueyficHj0prBsBVBfCgZ5Bd4PCGaaJ2UuLw==}
 
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
@@ -2294,6 +2300,10 @@ snapshots:
     dependencies:
       lzma-js-simple-v2: 1.2.3
       osu-classes: 3.2.0-beta.0
+
+  osu-stable-db@0.2.5:
+    dependencies:
+      osu-binary: 0.1.0
 
   p-limit@3.1.0:
     dependencies:
