@@ -50,3 +50,13 @@ export async function getFile(hash: string): Promise<Response> {
   if (!res.ok) throw new Error(`File error: ${res.status} ${res.statusText}`);
   return res;
 }
+
+export async function getReplayFile(beatmapHash: string, createdAt: Date): Promise<ArrayBuffer> {
+  const date1 = createdAt.toISOString().slice(0, -5);
+  const date2 = new Date(createdAt.getTime() + 1000).toISOString().slice(0, -5);
+  const score = await queryScores(`BeatmapHash="${beatmapHash}" and Date>=${date1} and Date<=${date2}`, 1);
+  if (score.count === 0) throw new Error('No matching score found');
+  const replayHash = score.items[0].Hash as string;
+  const res = await getFile(replayHash);
+  return await res.arrayBuffer();
+}

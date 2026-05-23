@@ -5,7 +5,7 @@ import { v1 } from 'mania-judge';
 import { parse } from 'mania-judge/osu-parsers';
 import { StatusPanel } from '@/status-panel';
 import { updateTimeline } from './charts';
-import { stable } from '@/local-client';
+import { stable, lazer } from '@/local-client';
 
 const cache = {
   beatmapHash: '',
@@ -106,8 +106,8 @@ async function getReplayData(data: WEBSOCKET_V2) {
 
       return await stable.getReplayFileWildcard(data.beatmap.checksum, new Date(data.resultsScreen.createdAt));
     } else {
-      // Lazer replay fetching not implemented yet
-      throw new Error('Lazer replay fetching not implemented yet');
+      const beatmapHash = data.files.beatmap.slice(5); // remove folder
+      return await lazer.getReplayFile(beatmapHash, new Date(data.resultsScreen.createdAt));
     }
   } catch (error) {
     if (data.resultsScreen.scoreId > 0) {
@@ -125,6 +125,6 @@ async function getReplayData(data: WEBSOCKET_V2) {
       showLoading('Parsing replay data...');
       return encodeScoreBuffer(data, lzmaData);
     }
-    throw new Error('Replay data not found in stable scores.db and score ID is not available for API fetch');
+    throw new Error('Replay file not found locally and score ID is not available to fetch from osu! API');
   }
 }
