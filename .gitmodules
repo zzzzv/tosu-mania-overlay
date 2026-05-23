@@ -1,0 +1,3 @@
+[submodule "OsuLocalServer"]
+	path = OsuLocalServer
+	url = https://github.com/zzzzv/OsuLocalServer
