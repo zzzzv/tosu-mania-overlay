@@ -1,11 +1,11 @@
 [
   {
-    "uniqueID": "apiKey",
-    "type": "password",
-    "title": "Osu API Key",
-    "description": "Osu API Key (https://osu.ppy.sh/p/api)",
+    "uniqueID": "serverUrl",
+    "type": "text",
+    "title": "OsuLocalServer URL",
+    "description": "Base URL of OsuLocalServer (e.g. http://localhost:5048)",
     "options": "",
-    "value": ""
+    "value": "http://localhost:5048"
   },
   {
     "uniqueID": "stepMs",

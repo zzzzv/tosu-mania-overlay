@@ -6,9 +6,7 @@ import {
   dateTimeTicksToWindowsFileTimeTicks,
 } from 'osu-stable-db';
 
-export const config = {
-  baseUrl: 'http://localhost:5167',
-};
+import { config } from './config.js';
 
 async function fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(`${config.baseUrl}${path}`);
@@ -22,11 +20,12 @@ export interface StatusResult {
 }
 
 export async function getStatus(): Promise<StatusResult> {
-  return fetchJson<StatusResult>('/api/status');
+  const data = await fetchJson<{ stable: StatusResult }>('/api/status');
+  return data.stable;
 }
 
 export async function getFile(relativePath: string): Promise<ArrayBuffer> {
-  const res = await fetch(`${config.baseUrl}/files/${relativePath.replace(/^\/+/, '')}`);
+  const res = await fetch(`${config.baseUrl}/api/stable/files/${relativePath.replace(/^\/+/, '')}`);
   if (!res.ok) throw new Error(`File error: ${res.status} ${res.statusText}`);
   return await res.arrayBuffer();
 }

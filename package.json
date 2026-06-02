@@ -5,11 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build.js dev",
-    "dev:lazer": "dotnet watch run --project OsuLocalServer/Lazer",
-    "dev:stable": "dotnet watch run --project OsuLocalServer/Stable",
-    "build": "node scripts/build.js build",
-    "publish:lazer": "dotnet publish OsuLocalServer/Lazer --configuration Release",
-    "publish:stable": "dotnet publish OsuLocalServer/Stable --configuration Release"
+    "build": "node scripts/build.js build"
   },
   "dependencies": {
     "@types/chroma-js": "^3.1.1",

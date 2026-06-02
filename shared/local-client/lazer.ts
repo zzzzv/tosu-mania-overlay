@@ -1,6 +1,4 @@
-export const config = {
-  baseUrl: 'http://localhost:5048',
-};
+import { config } from './config.js';
 
 async function fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(`${config.baseUrl}${path}`);
@@ -10,11 +8,12 @@ async function fetchJson<T>(path: string): Promise<T> {
 
 export interface StatusResult {
   available: boolean;
-  dataDirectory: string;
+  clientRealmPath: string;
 }
 
 export async function getStatus(): Promise<StatusResult> {
-  return fetchJson<StatusResult>('/api/status');
+  const data = await fetchJson<{ lazer: StatusResult }>('/status');
+  return data.lazer;
 }
 
 interface QueryResult {
@@ -30,23 +29,23 @@ async function query(path: string, rql: string, depth = 0): Promise<QueryResult>
 }
 
 export async function queryScores(rql: string, depth = 0): Promise<QueryResult> {
-  return query('/api/scores', rql, depth);
+  return query('/api/lazer/scores', rql, depth);
 }
 
 export async function queryBeatmaps(rql: string, depth = 0): Promise<QueryResult> {
-  return query('/api/beatmaps', rql, depth);
+  return query('/api/lazer/beatmaps', rql, depth);
 }
 
 export async function queryBeatmapSets(rql: string, depth = 0): Promise<QueryResult> {
-  return query('/api/beatmapsets', rql, depth);
+  return query('/api/lazer/beatmapsets', rql, depth);
 }
 
 export async function queryCollections(rql: string, depth = 0): Promise<QueryResult> {
-  return query('/api/collections', rql, depth);
+  return query('/api/lazer/collections', rql, depth);
 }
 
 export async function getFile(hash: string): Promise<Response> {
-  const res = await fetch(`${config.baseUrl}/files/${encodeURIComponent(hash)}`);
+  const res = await fetch(`${config.baseUrl}/api/lazer/files/${encodeURIComponent(hash)}`);
   if (!res.ok) throw new Error(`File error: ${res.status} ${res.statusText}`);
   return res;
 }

@@ -1,18 +1,17 @@
 import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
-import { fetchReplayLZMA, encodeScoreBuffer } from '@/osu-api';
 import { v1 } from 'mania-judge';
 import { parse } from 'mania-judge/osu-parsers';
 import { StatusPanel } from '@/status-panel';
 import { updateTimeline } from './charts';
-import { stable, lazer } from '@/local-client';
+import { stable, lazer, osuApiV2 } from '@/local-client';
 
 const cache = {
   beatmapHash: '',
   resultTime: '',
   stateName: '',
   settings: {
-    apiKey: '',
+    serverUrl: 'http://localhost:5048',
     stepMs: 1000,
     windowMs: 10000,
     gapMs: 6000
@@ -111,19 +110,15 @@ async function getReplayData(data: WEBSOCKET_V2) {
     }
   } catch (error) {
     if (data.resultsScreen.scoreId > 0) {
-      if (!cache.settings.apiKey) {
-        throw new Error('API key is required to fetch replay data from osu! API');
-      }
       const cacheKey = `replay-${data.resultsScreen.scoreId}`;
-      let lzmaData = await get(cacheKey);
-      if (!lzmaData) {
-        showLoading('Downloading replay from osu! API...');
-        lzmaData = await fetchReplayLZMA(cache.settings.apiKey, data.resultsScreen.mode.number, data.resultsScreen.scoreId);
-        await set(cacheKey, lzmaData);
-        console.log('Replay data fetched from osu! API and stored in IndexedDB');
+      let osrData = await get(cacheKey);
+      if (!osrData) {
+        showLoading('Downloading replay from osu! API v2...');
+        osrData = await osuApiV2.downloadReplay(data.resultsScreen.mode.name, data.resultsScreen.scoreId);
+        await set(cacheKey, osrData);
+        console.log('Replay data fetched from osu! API v2 and stored in IndexedDB');
       }
-      showLoading('Parsing replay data...');
-      return encodeScoreBuffer(data, lzmaData);
+      return osrData;
     }
     throw new Error('Replay file not found locally and score ID is not available to fetch from osu! API');
   }

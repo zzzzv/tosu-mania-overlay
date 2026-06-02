@@ -8,6 +8,8 @@
 2. 解压到tosu下的static文件夹
 3. 启动tosu，确保In-Game Overlay设置打开，进游戏按tosu快捷键，按提示操作。tosu的ingame-overlay需要单独下载或启动tosu时自动下载(国内网络可能超级慢)。如果游戏里按快捷键不显示tosu界面看看是不是ingame-overlay没下完
 
+**部分overlay需要启动[OsuLocalServer](https://github.com/zzzzv/OsuLocalServer)以获取本地数据**
+
 ## 当前可用
 
 ### Mania StarRating
@@ -32,7 +34,7 @@
 
 ![Mania Result](./assets/mania-result.png)
 
-准确率时间变化图，v1算法。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。看绑上别人成绩需要设置OSU API KEY来下replay
+准确率时间变化图，v1算法。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。
 
 上是累积图，中是10秒时间窗口，下是按空白段分段累积(用于段位)。正负面积图是打早或打晚的均值。参数可以设置
 
