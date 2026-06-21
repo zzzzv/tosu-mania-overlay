@@ -1,10 +1,10 @@
 import { config } from './config.js';
 
 export async function downloadReplay(
-  modeName: string,
   scoreId: number,
+  modeName?: string,
 ): Promise<ArrayBuffer> {
-  const url = `${config.baseUrl}/api/osuapi/v2/scores/${modeName}/${scoreId}/download`;
+  const url = `${config.baseUrl}/api/osuapi/v2/scores/${modeName ? `${modeName}/` : ''}${scoreId}/download`;
   const res = await fetch(url);
   if (!res.ok) {
     const text = await res.text().catch(() => '');

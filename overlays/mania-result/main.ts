@@ -114,7 +114,8 @@ async function getReplayData(data: WEBSOCKET_V2) {
       let osrData = await get(cacheKey);
       if (!osrData) {
         showLoading('Downloading replay from osu! API v2...');
-        osrData = await osuApiV2.downloadReplay(data.resultsScreen.mode.name, data.resultsScreen.scoreId);
+        const mode = data.client === 'stable' ? data.resultsScreen.mode.name : undefined;
+        osrData = await osuApiV2.downloadReplay(data.resultsScreen.scoreId, mode);
         await set(cacheKey, osrData);
         console.log('Replay data fetched from osu! API v2 and stored in IndexedDB');
       }

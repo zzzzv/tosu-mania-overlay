@@ -1,21 +1,5 @@
 import { config } from './config.js';
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${config.baseUrl}${path}`);
-  if (!res.ok) throw new Error(`Lazer server error: ${res.status} ${res.statusText}`);
-  return res.json();
-}
-
-export interface StatusResult {
-  available: boolean;
-  clientRealmPath: string;
-}
-
-export async function getStatus(): Promise<StatusResult> {
-  const data = await fetchJson<{ lazer: StatusResult }>('/status');
-  return data.lazer;
-}
-
 interface QueryResult {
   count: number;
   items: Record<string, unknown>[];
@@ -51,8 +35,9 @@ export async function getFile(hash: string): Promise<Response> {
 }
 
 export async function getReplayFile(beatmapHash: string, createdAt: Date): Promise<ArrayBuffer> {
-  const date1 = createdAt.toISOString().slice(0, -5);
+  const date1 = new Date(createdAt.getTime() - 1000).toISOString().slice(0, -5);
   const date2 = new Date(createdAt.getTime() + 1000).toISOString().slice(0, -5);
+  console.log(`Querying for replay with BeatmapHash="${beatmapHash}" and Date between ${date1} and ${date2}`);
   const score = await queryScores(`BeatmapHash="${beatmapHash}" and Date>=${date1} and Date<=${date2}`, 1);
   if (score.count === 0) throw new Error('No matching score found');
   const replayHash = score.items[0].Hash as string;
