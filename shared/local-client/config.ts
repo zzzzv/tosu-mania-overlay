@@ -3,6 +3,7 @@ export const config = {
 };
 
 export interface ServerStatus {
+  version: string;
   lazer: {
     available: boolean;
     clientRealmPath: string;

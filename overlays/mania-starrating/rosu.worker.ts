@@ -1,6 +1,9 @@
 import { expose } from 'comlink';
 import { calculateRosuSR } from './rosu-sr';
-import type { SRWorkerApi } from './sr-types';
+
+interface SRWorkerApi {
+  calculate(beatmapContent: string): Promise<Record<'nm' | 'ht' | 'dt', number>>;
+}
 
 const api: SRWorkerApi = {
   calculate: calculateRosuSR,

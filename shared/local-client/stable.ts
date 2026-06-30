@@ -6,7 +6,7 @@ import {
   dateTimeTicksToWindowsFileTimeTicks,
 } from 'osu-stable-db';
 
-import { config } from './config.js';
+import { config } from './config';
 
 export async function getFile(relativePath: string): Promise<ArrayBuffer> {
   const res = await fetch(`${config.baseUrl}/api/stable/files/${relativePath.replace(/^\/+/, '')}`);

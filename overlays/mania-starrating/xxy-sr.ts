@@ -1,5 +1,12 @@
 import initXxy, { calc_sr } from 'xxysr-wasm';
-import { clockRates, emptySRValues, type SRValues } from './sr-types';
+
+type ModKey = 'nm' | 'ht' | 'dt';
+
+const clockRates: Record<ModKey, number> = {
+  nm: 1,
+  ht: 0.75,
+  dt: 1.5,
+};
 
 let initialized = false;
 
@@ -10,17 +17,16 @@ export const ensureXxyInitialized = async (wasm?: Parameters<typeof initXxy>[0])
   }
 };
 
-export const calculateXxySR = async (beatmapContent: string): Promise<SRValues> => {
+export const calculateXxySR = async (beatmapContent: string): Promise<Record<ModKey, number>> => {
   await ensureXxyInitialized();
 
-  const result = emptySRValues();
+  const result: Record<ModKey, number> = { nm: 0, ht: 0, dt: 0 };
 
   for (const [key, rate] of Object.entries(clockRates)) {
     try {
-      result[key as keyof SRValues] = calc_sr(beatmapContent, rate);
+      result[key as ModKey] = calc_sr(beatmapContent, rate);
     } catch (error) {
       console.warn(error);
-      result[key as keyof SRValues] = 0;
     }
   }
 
