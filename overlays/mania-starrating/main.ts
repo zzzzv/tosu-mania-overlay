@@ -5,19 +5,17 @@ import type { ManiaSRData } from '../../shared/local-client/mania-sr';
 import chroma from 'chroma-js';
 
 let maniaSRData: Record<string, ManiaSRData> | null = null;
+let initPromise: Promise<void> | null = null;
 
-(async () => {
-  for (let i = 0; i < 3; i++) {
-    try {
-      maniaSRData = await maniaSr.getManiaSRData();
-      console.log(`[mania-starrating] mania-sr 已加载，共 ${Object.keys(maniaSRData).length} 个谱面`);
-      return;
-    } catch (e) {
-      if (i < 2) await new Promise(r => setTimeout(r, [15000, 30000][i]));
-      else console.log('[mania-starrating] mania-sr 加载失败（将使用本地计算）:', e);
-    }
-  }
-})();
+const ensureManiaSRData = () => {
+  if (maniaSRData || initPromise) return;
+  initPromise = maniaSr.getManiaSRData().then(data => {
+    maniaSRData = data;
+    console.log(`[mania-starrating] mania-sr 已加载，共 ${Object.keys(data).length} 个谱面`);
+  }).catch(e => {
+    console.log('[mania-starrating] mania-sr 加载失败（将使用本地计算）:', e);
+  });
+};
 
 const cache = {
   checksum: '',
@@ -28,15 +26,19 @@ const cache = {
 const scale = chroma.scale(['#faea3f', '#ffffff', '#ff5252']).domain([-5, 10, 25]);
 const getColor = (v: number) => scale(v).hex();
 
-const renderTable = async (beatmapContent: string, md5: string | null) => {
+const renderTable = async (beatmapContent: string, md5: string) => {
   let data: ManiaSRData;
 
-  if (md5 && maniaSRData && md5 in maniaSRData) {
+  if (maniaSRData && md5 in maniaSRData) {
     data = maniaSRData[md5];
     console.log(`[mania-starrating] 使用服务端数据 ${md5}`);
+  } else if (!maniaSRData) {
+    console.log(`[mania-starrating] 服务端数据未加载，本地计算 ${md5}`);
+    ensureManiaSRData();
+    data = await getStarRatingsWithCache(beatmapContent, `sr-${md5}`);
   } else {
-    console.log(`[mania-starrating] 本地计算 ${md5 ?? 'unknown'}`);
-    data = await getStarRatingsWithCache(beatmapContent, md5 ? `sr-${md5}` : null);
+    console.log(`[mania-starrating] 本地计算 ${md5}`);
+    data = await getStarRatingsWithCache(beatmapContent, `sr-${md5}`);
   }
 
   document.getElementById('sr-nm')!.textContent = data.PPY.NM.toFixed(2);
