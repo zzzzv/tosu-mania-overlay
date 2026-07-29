@@ -33,9 +33,8 @@ jobs:
 
     - name: Download OsuLocalServer release exe
       run: |
-        LATEST=$(curl -s "https://api.github.com/repos/zzzzv/OsuLocalServer/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
-        echo "Latest OsuLocalServer release: $LATEST"
-        curl -sL "https://github.com/zzzzv/OsuLocalServer/releases/download/$LATEST/OsuLocalServer.exe" -o OsuLocalServer.exe
+        gh release download -R zzzzv/OsuLocalServer -p "OsuLocalServer-*.exe"
+        mv OsuLocalServer-*.exe OsuLocalServer.exe
 
     - name: Get date tag
       id: date
