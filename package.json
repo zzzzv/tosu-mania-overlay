@@ -15,7 +15,7 @@
     "echarts": "^6.0.0",
     "idb-keyval": "^6.2.2",
     "mania-judge": "^0.1.0",
-    "mania-image": "^0.1.0",
+    "mania-image": "^0.1.1",
     "osu-binary": "^0.1.0",
     "osu-classes": "^3.2.0-beta.0",
     "osu-mania-stable": "^5.0.1",
