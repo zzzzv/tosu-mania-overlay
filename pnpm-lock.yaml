@@ -26,12 +26,12 @@ importers:
       idb-keyval:
         specifier: ^6.2.2
         version: 6.2.2
+      mania-image:
+        specifier: ^0.1.0
+        version: 0.1.0
       mania-judge:
         specifier: ^0.1.0
         version: 0.1.0(osu-classes@3.2.0-beta.0)(osu-mania-stable@5.0.1(osu-classes@3.2.0-beta.0))(osu-parsers@4.2.0-beta.0(osu-classes@3.2.0-beta.0))
-      mania-svg:
-        specifier: ^0.4.5
-        version: 0.4.5
       osu-binary:
         specifier: ^0.1.0
         version: 0.1.0
@@ -945,6 +945,9 @@ packages:
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
+  mania-image@0.1.0:
+    resolution: {integrity: sha512-HXW/PO/Bd0iskGz9MhVrjPxtGZyhuJJTPYbUVjhGUNMo3KyodL8TjoRN67zMwCLebSQj2LRdcUTVuXNlJDihNg==}
+
   mania-judge@0.1.0:
     resolution: {integrity: sha512-iOpzZR+HW+vMfDxfT7Z4JyY9VWElXYjJp3zaRd4UaJxTQP8dgiDTi4UJEc5SKGtPF7yZ6yQPiVPO/eHUQPppFg==}
     peerDependencies:
@@ -958,9 +961,6 @@ packages:
         optional: true
       osu-parsers:
         optional: true
-
-  mania-svg@0.4.5:
-    resolution: {integrity: sha512-TtKH3qH8Dd54vYBu8F9wxlHDaaXXRVkc0eX0nX3q/tMxNcolqtM7+qhsZcZ/rgA4DdAlI/VIrUUPzXqoUOpfKQ==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -2216,13 +2216,13 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  mania-image@0.1.0: {}
+
   mania-judge@0.1.0(osu-classes@3.2.0-beta.0)(osu-mania-stable@5.0.1(osu-classes@3.2.0-beta.0))(osu-parsers@4.2.0-beta.0(osu-classes@3.2.0-beta.0)):
     optionalDependencies:
       osu-classes: 3.2.0-beta.0
       osu-mania-stable: 5.0.1(osu-classes@3.2.0-beta.0)
       osu-parsers: 4.2.0-beta.0(osu-classes@3.2.0-beta.0)
-
-  mania-svg@0.4.5: {}
 
   math-intrinsics@1.1.0: {}
 

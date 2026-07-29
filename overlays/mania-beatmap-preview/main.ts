@@ -1,5 +1,5 @@
 import WebSocketManager, {type WEBSOCKET_V2} from '@/lib/socket';
-import { render } from 'mania-svg';
+import { render } from 'mania-image';
 import { parseBeatmap } from '@/parsers';
 import { Hold } from 'osu-mania-stable';
 import { lruGet, lruSet } from '@/lru-cache';
@@ -18,13 +18,14 @@ const changeVisibility = () => {
   app.style.opacity = visible ? '1' : '0';
 }
 
-const renderSVG = async () => {
-  const cacheKey = `svg:${cache.width}x${cache.height}:${cache.checksum}`;
+const renderImage = async () => {
+  const cacheKey = `img:${cache.width}x${cache.height}:${cache.checksum}`;
 
-  const cached = await lruGet<string>(cacheKey);
+  const cached = await lruGet<Blob>(cacheKey);
   if (cached) {
     console.log(`Cache hit ${cacheKey}`);
-    app.innerHTML = cached;
+    const url = URL.createObjectURL(cached);
+    app.innerHTML = `<img src="${url}" />`;
     return;
   }
   const startTime = performance.now();
@@ -37,35 +38,29 @@ const renderSVG = async () => {
   const data = {
     keys: mania.difficulty.circleSize,
     notes: mania.hitObjects.map(obj => ({
-      start: obj.startTime,
-      end: obj instanceof Hold ? obj.endTime : undefined,
+      startTime: obj.startTime,
+      endTime: obj instanceof Hold ? obj.endTime : undefined,
       column: obj.column,
     })),
     timingPoints: mania.controlPoints.timingPoints.map(tp => ({
       time: tp.startTime,
-      bpm: tp.bpm,
+      beatLength: 60000 / tp.bpm,
       meter: tp.timeSignature,
     })),
   };
 
-  const svg = render(data, {
-    strip: {
-      mode: 'ratio',
-      ratio: cache.width / cache.height,
-    },
-    layout: {
-      finalScale: 1,
-      targetSize: [cache.width, cache.height],
-    }
+  const blob = await render(data, {
+    layout: { mode: 'size', size: [cache.width, cache.height] },
   });
 
   const duration = performance.now() - startTime;
-  console.log(`Rendered SVG in ${duration.toFixed(2)} ms`);
+  console.log(`Rendered image in ${duration.toFixed(2)} ms`);
 
-  app.innerHTML = svg;
+  const url = URL.createObjectURL(blob);
+  app.innerHTML = `<img src="${url}" />`;
 
   if (duration > 300) {
-    await lruSet(cacheKey, svg);
+    await lruSet(cacheKey, blob);
     console.log(`Cache set ${cacheKey}`);
   }
 }
@@ -80,7 +75,7 @@ socket.commands(async (data: any) => {
       if (cache.width !== message.width || cache.height !== message.height) {
         cache.width = message.width;
         cache.height = message.height;
-        await renderSVG();
+        await renderImage();
       }
     }
   } catch (error) {
@@ -97,7 +92,7 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
     if (cache.checksum !== data.beatmap.checksum) {
       cache.checksum = data.beatmap.checksum;
       console.log(data);
-      await renderSVG();
+      await renderImage();
     }
   } catch (error) {
     console.log(error);
