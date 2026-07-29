@@ -30,20 +30,11 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1
       mania-judge:
-        specifier: ^0.1.0
-        version: 0.1.0(osu-classes@3.2.0-beta.0)(osu-mania-stable@5.0.1(osu-classes@3.2.0-beta.0))(osu-parsers@4.2.0-beta.0(osu-classes@3.2.0-beta.0))
-      osu-binary:
+        specifier: ^0.2.0
+        version: 0.2.0
+      osu-mania-io:
         specifier: ^0.1.0
         version: 0.1.0
-      osu-classes:
-        specifier: ^3.2.0-beta.0
-        version: 3.2.0-beta.0
-      osu-mania-stable:
-        specifier: ^5.0.1
-        version: 5.0.1(osu-classes@3.2.0-beta.0)
-      osu-parsers:
-        specifier: ^4.2.0-beta.0
-        version: 4.2.0-beta.0(osu-classes@3.2.0-beta.0)
       osu-stable-db:
         specifier: ^0.2.5
         version: 0.2.5
@@ -725,6 +716,9 @@ packages:
     resolution: {integrity: sha512-IGBwjF7tNk3cwypFNH/7bfzBcgSCbaMOD3GsaY1AU/JRrnHnYgEM0+9kQt52iZxjNsjBtJYtao146V+f8jFZNw==}
     engines: {node: '>=10'}
 
+  dotnet-random-ts@0.1.0:
+    resolution: {integrity: sha512-4gURKR/DmAl6/dEBXhHW1jn6JGr2UrnAUswr6srlysyubgXDkhvpR87pVjF82zpWSMZ84Eg66uStVTOpJgAV1w==}
+
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
@@ -948,19 +942,8 @@ packages:
   mania-image@0.1.1:
     resolution: {integrity: sha512-kAsm9hvFSGuZ8U7kh8MBmGCCLzS08rVfbRBf277sJ3a8/MxK82kHFS9ypjbgHGSYpeScDSdUSYK8khhN9iUGaQ==}
 
-  mania-judge@0.1.0:
-    resolution: {integrity: sha512-iOpzZR+HW+vMfDxfT7Z4JyY9VWElXYjJp3zaRd4UaJxTQP8dgiDTi4UJEc5SKGtPF7yZ6yQPiVPO/eHUQPppFg==}
-    peerDependencies:
-      osu-classes: ^3.2.0-beta.0
-      osu-mania-stable: ^5.0.1
-      osu-parsers: ^4.2.0-beta.0
-    peerDependenciesMeta:
-      osu-classes:
-        optional: true
-      osu-mania-stable:
-        optional: true
-      osu-parsers:
-        optional: true
+  mania-judge@0.2.0:
+    resolution: {integrity: sha512-GfsY9jdLdJ5dk2y+hgH7OALPHzG6PXD7J4q2YWFzDzar79ds+5XETdrkkHVcThenL5jdeJRQ0+X7d5GsdLDQ/A==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -1019,6 +1002,9 @@ packages:
 
   osu-classes@3.2.0-beta.0:
     resolution: {integrity: sha512-w7t1tqDoeQJM3IorPs0CXadcxZ5kx/hC/LwcJMVhD9zLZOTnTVjADKkRS5a0VvzPmCKeec1sAQYFNHoNgN5z7A==}
+
+  osu-mania-io@0.1.0:
+    resolution: {integrity: sha512-naiCcRaNYJmosdSb7bTonDmwpLu/psQ1S1Vk6o7H/79A8w4dE1ayTgkWfwNap5yGRpbVSz7REvzSJyNQMFal/Q==}
 
   osu-mania-stable@5.0.1:
     resolution: {integrity: sha512-Zqzqi3LAYkUaUCDIjLAhXpxanVlTkLp2mwfYg4mdjPz+Y8HsigidzfZZo0ykg9sVmSTIEQHGG4UCRW72ehAHWA==}
@@ -1963,6 +1949,8 @@ snapshots:
 
   domain-browser@4.22.0: {}
 
+  dotnet-random-ts@0.1.0: {}
+
   dunder-proto@1.0.1:
     dependencies:
       call-bind-apply-helpers: 1.0.2
@@ -2218,11 +2206,7 @@ snapshots:
 
   mania-image@0.1.1: {}
 
-  mania-judge@0.1.0(osu-classes@3.2.0-beta.0)(osu-mania-stable@5.0.1(osu-classes@3.2.0-beta.0))(osu-parsers@4.2.0-beta.0(osu-classes@3.2.0-beta.0)):
-    optionalDependencies:
-      osu-classes: 3.2.0-beta.0
-      osu-mania-stable: 5.0.1(osu-classes@3.2.0-beta.0)
-      osu-parsers: 4.2.0-beta.0(osu-classes@3.2.0-beta.0)
+  mania-judge@0.2.0: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -2300,6 +2284,12 @@ snapshots:
   osu-binary@0.1.0: {}
 
   osu-classes@3.2.0-beta.0: {}
+
+  osu-mania-io@0.1.0:
+    dependencies:
+      dotnet-random-ts: 0.1.0
+      lzma-js-simple-v2: 1.2.3
+      osu-binary: 0.1.0
 
   osu-mania-stable@5.0.1(osu-classes@3.2.0-beta.0):
     dependencies:

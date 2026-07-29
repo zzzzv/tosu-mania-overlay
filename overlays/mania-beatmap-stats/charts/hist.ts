@@ -1,5 +1,5 @@
 import * as echarts from 'echarts/core';
-import { ManiaBeatmap } from 'osu-mania-stable';
+import type { Beatmap } from 'osu-mania-io';
 
 let chart: echarts.EChartsType | null = null;
 
@@ -48,20 +48,20 @@ const initChart = () => {
   return chart;
 };
 
-export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void => {
+export const update = (beatmap: Beatmap, countTail: boolean = false): void => {
   const chart = initChart();
 
-  const keys = beatmap.difficulty!.circleSize;
+  const keys = beatmap.difficulty.keyCount;
   const data = Array.from({ length: keys }, () => ({ note: 0, hold: 0 }));
 
-  for (const note of beatmap.notes) {
-    data[note.column].note++;
-  }
-
-  for (const hold of beatmap.holds) {
-    data[hold.column].hold++;
-    if (countTail) {
-      data[hold.column].hold++;
+  for (const obj of beatmap.hitObjects) {
+    if (obj.endTime === undefined) {
+      data[obj.column].note++;
+    } else {
+      data[obj.column].hold++;
+      if (countTail) {
+        data[obj.column].hold++;
+      }
     }
   }
 

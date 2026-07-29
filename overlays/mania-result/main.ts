@@ -1,7 +1,7 @@
 import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
-import { v1 } from 'mania-judge';
-import { parse } from 'mania-judge/osu-parsers';
+import { v1, beatmapToNoteColumns, replayToActionColumns } from 'mania-judge';
+import { parseBeatmap, parseReplay, applyLegacyBeatmapMods } from 'osu-mania-io';
 import { StatusPanel } from '@/status-panel';
 import { updateTimeline } from './charts';
 import { stable, lazer, osuApiV2 } from '@/local-client';
@@ -89,7 +89,18 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
     }
 
     const scoreBuffer = await getReplayData(data);
-    const { osuData } = await parse(beatmapContent, scoreBuffer);
+    const beatmap = parseBeatmap(beatmapContent);
+    const keyCount = beatmap.difficulty.keyCount;
+    const replay = parseReplay(new Uint8Array(scoreBuffer), keyCount);
+    const effective = replay.mods !== 0 ? applyLegacyBeatmapMods(beatmap, replay.mods) : beatmap;
+    const osuData = {
+      od: effective.difficulty.overallDifficulty,
+      hp: effective.difficulty.hpDrainRate,
+      speedRate: 'speedMultiplier' in effective ? (effective as any).speedMultiplier : 1,
+      windowScale: 'hitWindowScale' in effective ? (effective as any).hitWindowScale : 1,
+      noteColumns: beatmapToNoteColumns(effective),
+      actionColumns: replayToActionColumns(replay.frames, keyCount),
+    };
     clearStatus();
     const judgements = v1.playOsu(osuData);
     updateTimeline(judgements, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);

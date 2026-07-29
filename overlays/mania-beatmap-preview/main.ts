@@ -1,7 +1,6 @@
 import WebSocketManager, {type WEBSOCKET_V2} from '@/lib/socket';
 import { render } from 'mania-image';
 import { parseBeatmap } from '@/parsers';
-import { Hold } from 'osu-mania-stable';
 import { lruGet, lruSet } from '@/lru-cache';
 
 const cache = {
@@ -36,17 +35,19 @@ const renderImage = async () => {
   }
   const mania = parseBeatmap(beatmapContent);
   const data = {
-    keys: mania.difficulty.circleSize,
+    keys: mania.difficulty.keyCount,
     notes: mania.hitObjects.map(obj => ({
       startTime: obj.startTime,
-      endTime: obj instanceof Hold ? obj.endTime : undefined,
+      endTime: obj.endTime,
       column: obj.column,
     })),
-    timingPoints: mania.controlPoints.timingPoints.map(tp => ({
-      time: tp.startTime,
-      beatLength: 60000 / tp.bpm,
-      meter: tp.timeSignature,
-    })),
+    timingPoints: mania.controlPoints
+      .filter((cp): cp is { kind: 'timing'; time: number; beatLength: number; meter: number } => cp.kind === 'timing')
+      .map(tp => ({
+        time: tp.time,
+        beatLength: tp.beatLength,
+        meter: tp.meter,
+      })),
   };
 
   const blob = await render(data, {

@@ -1,18 +1,13 @@
-import { BeatmapDecoder, ScoreDecoder } from 'osu-parsers';
-import { ManiaRuleset, ManiaBeatmap, ManiaReplayConverter } from 'osu-mania-stable';
+import { parseBeatmap as ioParseBeatmap } from 'osu-mania-io';
+import { parseReplay as ioParseReplay } from 'osu-mania-io';
+import type { Beatmap } from 'osu-mania-io';
 
-export const parseBeatmap = (beatmapContent: string): ManiaBeatmap => {
-  const decoder = new BeatmapDecoder();
-  const beatmap = decoder.decodeFromString(beatmapContent, { parseStoryboard: false });
-  const ruleset = new ManiaRuleset();
-  const converted = ruleset.applyToBeatmap(beatmap);
-  return converted;
+export { type Beatmap };
+
+export const parseBeatmap = (beatmapContent: string): Beatmap => {
+  return ioParseBeatmap(beatmapContent);
 }
 
-export const parseReplay = async (buffer: ArrayBuffer|Uint8Array, beatmap: ManiaBeatmap) => {
-  const decoder = new ScoreDecoder();
-  const score = await decoder.decodeFromBuffer(buffer, true);
-  const converter = new ManiaReplayConverter();
-  const converted = converter.convertReplay(score.replay!, beatmap);
-  return converted;
+export const parseReplay = (buffer: ArrayBuffer | Uint8Array, keyCount: number) => {
+  return ioParseReplay(buffer, keyCount);
 }

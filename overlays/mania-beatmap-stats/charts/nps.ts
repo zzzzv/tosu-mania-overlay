@@ -1,5 +1,5 @@
 import * as echarts from 'echarts/core';
-import { ManiaBeatmap } from 'osu-mania-stable';
+import type { Beatmap, TimingPoint, ScrollVelocityPoint } from 'osu-mania-io';
 
 let chart: echarts.EChartsType | null = null;
 
@@ -104,29 +104,47 @@ const initChart = () => {
   return chart;
 };
 
-const getEndTime = (beatmap: ManiaBeatmap) => {
-  return Math.max(
-    beatmap.notes.at(-1)?.startTime || 0,
-    beatmap.holds.reduce((max, h) => Math.max(max, h.endTime), 0)
-  );
+const getEndTime = (beatmap: Beatmap) => {
+  return beatmap.hitObjects.reduce((max, obj) => Math.max(max, obj.endTime ?? obj.startTime), 0);
 }
 
-export const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
-  const startTime = 0;
+const getTimingPoints = (beatmap: Beatmap): TimingPoint[] => {
+  return beatmap.controlPoints.filter((cp): cp is TimingPoint => cp.kind === 'timing');
+};
+
+const getSvPoints = (beatmap: Beatmap): ScrollVelocityPoint[] => {
+  return beatmap.controlPoints.filter((cp): cp is ScrollVelocityPoint => cp.kind === 'scroll-velocity');
+};
+
+const findLastTimingPoint = (timingPoints: TimingPoint[], time: number): TimingPoint | undefined => {
+  for (let i = timingPoints.length - 1; i >= 0; i--) {
+    if (timingPoints[i].time <= time) return timingPoints[i];
+  }
+  return undefined;
+};
+
+const findLastSvPoint = (svPoints: ScrollVelocityPoint[], time: number): ScrollVelocityPoint | undefined => {
+  for (let i = svPoints.length - 1; i >= 0; i--) {
+    if (svPoints[i].time <= time) return svPoints[i];
+  }
+  return undefined;
+};
+
+export const getNps = (beatmap: Beatmap, countTail: boolean = false) => {
   const endTime = getEndTime(beatmap);
-  const seconds = Math.floor((endTime - startTime) / 1000) + 1;
+  const seconds = Math.floor(endTime / 1000) + 1;
 
   const data = Array.from({ length: seconds }, () => ({ note: 0, hold: 0 }));
 
-  for (const note of beatmap.notes) {
-    const second = Math.floor(note.startTime / 1000);
-    data[second].note++;
-  }
-
-  for (const hold of beatmap.holds) {
-    data[Math.floor(hold.startTime / 1000)].hold++;
-    if (countTail) {
-      data[Math.floor(hold.endTime / 1000)].hold++;
+  for (const obj of beatmap.hitObjects) {
+    const second = Math.floor(obj.startTime / 1000);
+    if (obj.endTime === undefined) {
+      data[second].note++;
+    } else {
+      data[second].hold++;
+      if (countTail) {
+        data[Math.floor(obj.endTime / 1000)].hold++;
+      }
     }
   }
   return data
@@ -134,19 +152,23 @@ export const getNps = (beatmap: ManiaBeatmap, countTail: boolean = false) => {
 
 export type SvPoint = [time: number, velocity: number];
 
-export const getSv = (beatmap: ManiaBeatmap) => {
+export const getSv = (beatmap: Beatmap) => {
   const endTime = getEndTime(beatmap);
-  const commonBpm = beatmap.bpm;
+  const timingPoints = getTimingPoints(beatmap);
+  const svPoints = getSvPoints(beatmap);
+  const commonBeatLength = timingPoints[0]?.beatLength ?? 500;
   const data: Record<number, number> = {};
 
-  for (const tp of beatmap.controlPoints.timingPoints) {
-    const dp = beatmap.controlPoints.difficultyPointAt(tp.startTime);
-    data[tp.startTime] = tp.bpm / commonBpm * dp.sliderVelocity;
+  for (const tp of timingPoints) {
+    const sv = findLastSvPoint(svPoints, tp.time);
+    data[tp.time] = (commonBeatLength / tp.beatLength) * (sv?.multiplier ?? 1);
   }
 
-  for (const dp of beatmap.controlPoints.difficultyPoints) {
-    const tp = beatmap.controlPoints.timingPointAt(dp.startTime);
-    data[dp.startTime] = tp.bpm / commonBpm * dp.sliderVelocity;
+  for (const sv of svPoints) {
+    const tp = findLastTimingPoint(timingPoints, sv.time);
+    if (tp) {
+      data[sv.time] = (commonBeatLength / tp.beatLength) * sv.multiplier;
+    }
   }
   if (!data[0]) data[0] = 1.0;
   data[endTime] = 1.0;
@@ -157,7 +179,7 @@ export const getSv = (beatmap: ManiaBeatmap) => {
   return sorted;
 }
 
-export const update = (beatmap: ManiaBeatmap, countTail: boolean = false): void => {
+export const update = (beatmap: Beatmap, countTail: boolean = false): void => {
   const chart = initChart();
 
   const nps = getNps(beatmap, countTail);
