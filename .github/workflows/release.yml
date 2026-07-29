@@ -32,10 +32,7 @@ jobs:
         zip -r ../mania-overlays.zip .
 
     - name: Download OsuLocalServer release exe
-      run: |
-        LATEST=$(curl -s "https://api.github.com/repos/zzzzv/OsuLocalServer/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
-        echo "Latest OsuLocalServer release: $LATEST"
-        curl -sL "https://github.com/zzzzv/OsuLocalServer/releases/download/$LATEST/OsuLocalServer.exe" -o OsuLocalServer.exe
+      run: gh release download -R zzzzv/OsuLocalServer -p "OsuLocalServer-*.exe"
 
     - name: Get date tag
       id: date
@@ -48,7 +45,7 @@ jobs:
         name: ${{ steps.date.outputs.tag }}
         files: |
           mania-overlays.zip
-          OsuLocalServer.exe
+          OsuLocalServer-*.exe
         draft: false
         prerelease: false
       env:
