@@ -26,7 +26,7 @@
 
 ### Mania Beatmap Preview
 
-<img width="600" alt="image" src="https://raw.githubusercontent.com/zzzzv/tosu-mania-overlay/main/assets/preview.svg" />
+![Mania Beatmap Preview](./assets/preview.png)
 
 谱面预览
 
