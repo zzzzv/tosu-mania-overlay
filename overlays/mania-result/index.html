@@ -26,16 +26,36 @@
         flex: 0 0 auto;
         z-index: 10;
       }
+      #content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
       #timeline {
         flex: 1;
         min-height: 0;
+      }
+      #summary {
+        flex: 0 0 auto;
+        box-sizing: border-box;
+        height: 52px;
+        padding: 0 12px 10px;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 14px;
+        line-height: 21px;
+        white-space: nowrap;
+        overflow: hidden;
       }
     </style>
   </head>
   <body>
     <div id="app">
       <div id="status-panel"></div>
-      <div id="timeline"></div>
+      <div id="content">
+        <div id="timeline"></div>
+        <div id="summary"></div>
+      </div>
     </div>
     <script type="module" src="./main.ts"></script>
   </body>

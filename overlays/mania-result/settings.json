@@ -1,5 +1,13 @@
 [
   {
+    "uniqueID": "judgeMode",
+    "type": "options",
+    "title": "Judgement Mode",
+    "description": "Judgement system used for the timeline: v1 (osu!stable windows and LN judging) or lazer (osu!lazer windows, hold head/tail judging).",
+    "options": ["v1", "lazer"],
+    "value": "v1"
+  },
+  {
     "uniqueID": "serverUrl",
     "type": "text",
     "title": "OsuLocalServer URL",

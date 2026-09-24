@@ -1,17 +1,22 @@
 import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
-import { v1, beatmapToNoteColumns, replayToActionColumns } from 'mania-judge';
+import { beatmapToNoteColumns, replayToActionColumns } from 'mania-judge';
+import type { OsuData } from 'mania-judge';
 import { parseBeatmap, parseReplay, applyLegacyBeatmapMods } from 'osu-mania-io';
 import { StatusPanel } from '@/status-panel';
-import { updateTimeline } from './charts';
+import { judgeOsu, summarize, type JudgeMode } from './accuracy';
+import { updateSummary, updateTimeline } from './charts';
 import { stable, lazer, osuApiV2 } from '@/local-client';
 
 const cache = {
   beatmapHash: '',
   resultTime: '',
   stateName: '',
+  osuData: null as OsuData | null,
+  summaryToken: 0,
   settings: {
     serverUrl: 'http://localhost:5048',
+    judgeMode: 'v1' as JudgeMode,
     stepMs: 1000,
     windowMs: 10000,
     gapMs: 6000
@@ -19,9 +24,8 @@ const cache = {
 };
 
 const app = document.getElementById('app')!;
-const timeline = document.getElementById('timeline')!;
 const statusPanel = new StatusPanel(document.getElementById('status-panel')!);
-statusPanel.bindContent(timeline);
+statusPanel.bindContent(document.getElementById('content')!);
 
 function showBanner(message: string, type: 'info' | 'error') {
   statusPanel.set(message, type);
@@ -49,6 +53,41 @@ function clearStatus() {
   app.style.opacity = cache.stateName === 'resultScreen' ? '1' : '0';
 }
 
+function renderTimeline() {
+  if (!cache.osuData) return;
+
+  const osuData = cache.osuData;
+  const mode = cache.settings.judgeMode;
+  const judgements = judgeOsu(osuData, mode);
+  updateTimeline(judgements, mode, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
+  renderSummary(osuData);
+}
+
+function renderSummary(osuData: OsuData) {
+  // Searching the best offset re-judges the play dozens of times, so let the chart
+  // paint first and drop the work if a newer result came in meanwhile.
+  const token = ++cache.summaryToken;
+
+  setTimeout(() => {
+    if (token !== cache.summaryToken) return;
+    updateSummary(summarize(osuData));
+  }, 0);
+}
+
+function applySettings(values: Partial<typeof cache.settings>) {
+  const next = { ...cache.settings, ...values };
+  next.judgeMode = next.judgeMode === 'lazer' ? 'lazer' : 'v1';
+
+  const changed = (Object.keys(next) as (keyof typeof next)[])
+    .some((key) => next[key] !== cache.settings[key]);
+
+  cache.settings = next;
+
+  if (changed) {
+    renderTimeline();
+  }
+}
+
 const socket = new WebSocketManager(window.location.host);
 
 socket.sendCommand('getSettings', window.COUNTER_PATH);
@@ -56,7 +95,7 @@ socket.commands((data) => {
   try {
     const { command, message } = data;
     if (command === 'getSettings') {
-      cache.settings = { ...cache.settings, ...message };
+      applySettings(message);
     }
   } catch (error) {
     showError(error);
@@ -102,8 +141,8 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
       actionColumns: replayToActionColumns(replay.frames, keyCount),
     };
     clearStatus();
-    const judgements = v1.playOsu(osuData);
-    updateTimeline(judgements, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
+    cache.osuData = osuData;
+    renderTimeline();
   } catch (error) {
     showError(error);
     console.log(error);

@@ -1,8 +1,7 @@
 import * as echarts from 'echarts/core';
-import type { Columns, JudgementV1 } from 'mania-judge'
-import { compareJudgements } from 'mania-judge';
-import type { DataPoint } from '../accuracy';
-import { cumulateSeriesBuilder, splitSeriesBuilder, windowedSeriesBuilder } from '../accuracy';
+import type { Columns, JudgementV1, JudgementV2 } from 'mania-judge'
+import type { DataPoint, JudgeMode } from '../accuracy';
+import { ACC_TABLES, cumulateSeriesBuilder, normalizeJudgements, splitSeriesBuilder, windowedSeriesBuilder } from '../accuracy';
 
 let chart: echarts.EChartsType | null = null;
 
@@ -234,17 +233,19 @@ function initChart() {
 }
 
 export function update(
-  judgements: Columns<JudgementV1>,
+  judgements: Columns<JudgementV1> | Columns<JudgementV2>,
+  mode: JudgeMode,
   windowMs: number,
   gapMs: number,
   stepMs: number,
 ) {
   const chart = initChart();
 
-  const sorted = judgements.flat().sort((a, b) => compareJudgements(a, b));
-  const cumulate = cumulateSeriesBuilder(sorted, stepMs);
-  const windowed = windowedSeriesBuilder(sorted, stepMs, windowMs);
-  const split = splitSeriesBuilder(sorted, stepMs, gapMs);
+  const sorted = normalizeJudgements(judgements, mode);
+  const accTable = ACC_TABLES[mode];
+  const cumulate = cumulateSeriesBuilder(sorted, accTable, stepMs);
+  const windowed = windowedSeriesBuilder(sorted, accTable, stepMs, windowMs);
+  const split = splitSeriesBuilder(sorted, accTable, stepMs, gapMs);
 
   const groups = [cumulate, windowed, split].flatMap((builder) => {
     const earlySeries = builder.buildEarly();
@@ -259,6 +260,12 @@ export function update(
   });
 
   chart.setOption({
+    title: {
+      text: `Judgement: ${mode}`,
+      left: 56,
+      top: 0,
+      textStyle: { fontSize: 12, fontWeight: 'normal' },
+    },
     series: groups
   });
 }

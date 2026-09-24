@@ -1,6 +1,6 @@
 # osu!mania用的tosu overlay
 
-非pp counter，作者不直播，只考虑选图界面和结算界面(还没做)
+非pp counter，作者不直播，只考虑选图界面和结算界面
 
 ## 使用
 
@@ -34,11 +34,13 @@
 
 ![Mania Result](./assets/mania-result.png)
 
-准确率时间变化图，v1算法。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。
+准确率时间变化图，可选v1(osu!stable)或lazer(osu!lazer)判定。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。
 
 上是累积图，中是10秒时间窗口，下是按空白段分段累积(用于段位)。正负面积图是打早或打晚的均值。参数可以设置
 
-由于不知道ppy面图到底是怎么判的，面图可能0.1%-0.3%的误差
+图表下面两行是两种判定这次的准确率，以及把回放整体前后平移多少毫秒时准确率最高(1ms一档，某个方向连续3档没更高就停)
+
+面图有误差，v1约0.2%，lazer约0.1%
 
 ### Mania Hidden
 

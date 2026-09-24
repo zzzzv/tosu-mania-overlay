@@ -24,3 +24,4 @@ echarts.registerTheme('mania', {
 });
 
 export { update as updateTimeline } from './timeline';
+export { update as updateSummary } from './summary';
