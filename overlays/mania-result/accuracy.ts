@@ -86,6 +86,18 @@ function fromLazer(judgements: Columns<JudgementV2>): JudgementV1[] {
 /** The judgement systems reported side by side in the summary. */
 export const JUDGE_MODES: readonly JudgeMode[] = ['v1', 'lazer'];
 
+export type ColumnStat = {
+  column: number;
+  /** Number of judgements in this column. */
+  count: number;
+  /** Accuracy of this column, ignoring its timing. */
+  accuracy: number;
+  /** Mean timing offset in milliseconds, or null when the column has no hits. */
+  meanOffset: number | null;
+  /** Unstable rate (ten times the standard deviation of the offsets), or null when the column has no hits. */
+  unstableRate: number | null;
+};
+
 export type JudgeSummary = {
   mode: JudgeMode;
   /** Accuracy of the play as judged without any timing shift. */
@@ -97,7 +109,7 @@ export type JudgeSummary = {
 };
 
 /** How many offsets in a row may miss the running maximum before a direction is dropped. */
-const SEARCH_TOLERANCE = 3;
+const SEARCH_TOLERANCE = 5;
 
 /** Shifting further than this is pointless: every note would miss anyway. */
 const MAX_SEARCH_OFFSET = 500;
@@ -109,6 +121,53 @@ export function judgementAccuracy(
 ): number {
   const [sum, count] = accuracyOf(flattenJudgements(judgements, mode), ACC_TABLES[mode]);
   return count > 0 ? sum / count : 0;
+}
+
+/** Per-column accuracy, mean timing offset and unstable rate, one entry per key. */
+export function columnStats(
+  judgements: Columns<JudgementV1> | Columns<JudgementV2>,
+  mode: JudgeMode,
+): ColumnStat[] {
+  const accTable = ACC_TABLES[mode];
+  const sums = judgements.map(() => 0);
+  const counts = judgements.map(() => 0);
+  const offsets = judgements.map(() => [] as number[]);
+
+  for (const judgement of flattenJudgements(judgements, mode)) {
+    const column = judgement.note.column;
+    if (column >= offsets.length) continue;
+
+    sums[column] += accTable[judgement.result];
+    counts[column]++;
+
+    // Misses carry no meaningful timing, so they are left out of the offset stats.
+    if (judgement.result < HIT_RESULTS.Miss) {
+      offsets[column].push(...getOffsets(judgement));
+    }
+  }
+
+  return offsets.map((columnOffsets, column) => ({
+    column,
+    count: counts[column],
+    accuracy: counts[column] > 0 ? sums[column] / counts[column] : 0,
+    meanOffset: meanOf(columnOffsets),
+    unstableRate: unstableRateOf(columnOffsets),
+  }));
+}
+
+function meanOf(values: number[]) {
+  if (values.length === 0) return null;
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+/** Unstable rate: ten times the standard deviation of the hit offsets. */
+function unstableRateOf(values: number[]) {
+  const mean = meanOf(values);
+  if (mean === null) return null;
+
+  const variance = values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+  return Math.sqrt(variance) * 10;
 }
 
 /** Summarize every judgement system, including the best timing offset of each. */

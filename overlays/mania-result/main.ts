@@ -5,7 +5,7 @@ import type { OsuData } from 'mania-judge';
 import { parseBeatmap, parseReplay, applyLegacyBeatmapMods } from 'osu-mania-io';
 import { StatusPanel } from '@/status-panel';
 import { judgeOsu, summarize, type JudgeMode } from './accuracy';
-import { updateSummary, updateTimeline } from './charts';
+import { updateColumns, updateSummary, updateTimeline } from './charts';
 import { stable, lazer, osuApiV2 } from '@/local-client';
 
 const cache = {
@@ -60,6 +60,7 @@ function renderTimeline() {
   const mode = cache.settings.judgeMode;
   const judgements = judgeOsu(osuData, mode);
   updateTimeline(judgements, mode, cache.settings.windowMs, cache.settings.gapMs, cache.settings.stepMs);
+  updateColumns(judgements, mode);
   renderSummary(osuData);
 }
 

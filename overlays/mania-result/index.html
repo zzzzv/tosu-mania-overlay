@@ -9,7 +9,7 @@
         margin: 0;
         overflow: hidden;
         width: 800px;
-        height: 500px;
+        height: 580px;
       }
       #app {
         box-sizing: border-box;
@@ -36,6 +36,37 @@
         flex: 1;
         min-height: 0;
       }
+      #columns {
+        flex: 0 0 auto;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 88px;
+        padding: 0 12px 8px;
+        font-size: 13px;
+        line-height: 22px;
+        font-variant-numeric: tabular-nums;
+      }
+      #columns table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+      }
+      #columns th {
+        width: 84px;
+        padding: 0 8px 0 0;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: normal;
+        text-align: left;
+      }
+      #columns td {
+        text-align: center;
+        white-space: nowrap;
+      }
+      #columns td:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.05);
+      }
       #summary {
         flex: 0 0 auto;
         box-sizing: border-box;
@@ -54,6 +85,7 @@
       <div id="status-panel"></div>
       <div id="content">
         <div id="timeline"></div>
+        <div id="columns"></div>
         <div id="summary"></div>
       </div>
     </div>

@@ -34,7 +34,7 @@
 
 ![Mania Result](./assets/mania-result.png)
 
-准确率时间变化图，可选v1(osu!stable)或lazer(osu!lazer)判定。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。
+准确率时间变化图，下方附按 key 分列的表格（accuracy、平均 offset、UR），可选v1(osu!stable)或lazer(osu!lazer)判定。从本地读osr文件需要运行OsuLocalServer。stable刚打完的成绩需要先退出结算界面游戏才生成osr，然后再点回来才显示。
 
 上是累积图，中是10秒时间窗口，下是按空白段分段累积(用于段位)。正负面积图是打早或打晚的均值。参数可以设置
 
