@@ -1,0 +1,8 @@
+Usecase: ingame
+Name: Mania Ladder
+Version: 1
+Author: zzzzv
+CompatibleWith: tosu
+Resolution: 560 x 520
+authorLinks: https://github.com/zzzzv/tosu-mania-overlay
+Notes: Requires OsuLocalServer for local replays.

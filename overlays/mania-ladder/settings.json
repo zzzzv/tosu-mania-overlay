@@ -1,0 +1,26 @@
+[
+  {
+    "uniqueID": "serverUrl",
+    "type": "text",
+    "title": "OsuLocalServer URL",
+    "description": "Base URL of OsuLocalServer (e.g. http://localhost:5048)",
+    "options": "",
+    "value": "http://localhost:5048"
+  },
+  {
+    "uniqueID": "judgeMode",
+    "type": "options",
+    "title": "Judgement Mode",
+    "description": "auto follows the current client (stable uses v1, lazer uses lazer).",
+    "options": ["auto", "v1", "lazer"],
+    "value": "auto"
+  },
+  {
+    "uniqueID": "maxReplays",
+    "type": "number",
+    "title": "Max Rows",
+    "description": "Maximum number of ladder rows to show (up to 30), sorted by accuracy.",
+    "options": "",
+    "value": 10
+  }
+]

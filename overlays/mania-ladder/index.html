@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mania Ladder</title>
+    <style>
+      html, body {
+        margin: 0;
+        overflow: hidden;
+        width: 560px;
+        height: 520px;
+      }
+      #app {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 12px 12px 14px;
+        color: #ffffff;
+        background: rgba(0, 33, 71, 0.9);
+        opacity: 0;
+        transition: opacity 200ms ease;
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      }
+      #status-panel {
+        flex: 0 0 auto;
+        margin-bottom: 8px;
+      }
+      #content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      #header {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      #title {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+        letter-spacing: 1.5px;
+      }
+      #live {
+        color: #5FD1FF;
+        font-size: 21px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      #column-labels, .row {
+        display: grid;
+        grid-template-columns: 30px 176px 98px 80px 80px;
+        column-gap: 18px;
+        align-items: center;
+      }
+      #column-labels {
+        flex: 0 0 auto;
+        padding: 3px 0 2px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 13px;
+      }
+      #rows {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .row {
+        flex: 1 1 0;
+        max-height: 30px;
+        min-height: 0;
+        overflow: hidden;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 18px;
+        line-height: 1.25;
+        font-variant-numeric: tabular-nums;
+      }
+      .row:first-child {
+        border-top: none;
+      }
+      .row .rank {
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .row:first-child .rank {
+        color: #FFD166;
+      }
+      .row .name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .row .time {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 15px;
+      }
+      .row .delta {
+        font-size: 17px;
+      }
+      .time, .acc, .delta {
+        text-align: right;
+      }
+      .row .delta.pos {
+        color: #44FFA3;
+      }
+      .row .delta.neg {
+        color: #FF5F7A;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="status-panel"></div>
+      <div id="content">
+        <div id="header">
+          <span id="title">LOCAL LADDER</span>
+          <span id="live"></span>
+        </div>
+        <div id="column-labels">
+          <span>#</span>
+          <span>PLAYER</span>
+          <span class="time">TIME</span>
+          <span class="acc">ACC</span>
+          <span class="delta">Δ LIVE</span>
+        </div>
+        <div id="rows"></div>
+      </div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

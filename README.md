@@ -42,6 +42,12 @@
 
 面图有误差，v1约0.2%，lazer约0.1%
 
+### Mania Ladder
+
+![Mania Ladder](./assets/mania-ladder.png)
+
+游玩或播放 replay 时显示当前谱面本地 replay 的排行榜，按当前时间点的 accuracy 排序，并显示玩家名、时间、accuracy 和相对本次游玩的偏差。需要运行OsuLocalServer
+
 ### Mania Hidden
 
 全黑下隐挡板，根据当前时间对应的 SV 改变挡板的遮盖比例。可以设置 width、height 和动画时间
