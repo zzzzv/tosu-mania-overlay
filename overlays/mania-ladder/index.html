@@ -10,15 +10,14 @@
         overflow: hidden;
         width: 560px;
         height: 520px;
+        background: transparent;
       }
       #app {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        height: 100%;
-        padding: 12px 12px 14px;
+        padding: 12px;
         color: #ffffff;
-        background: rgba(0, 33, 71, 0.9);
         opacity: 0;
         transition: opacity 200ms ease;
         font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
@@ -28,10 +27,12 @@
         margin-bottom: 8px;
       }
       #content {
-        flex: 1;
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        min-height: 0;
+        padding: 10px 14px 12px;
+        border-radius: 6px;
+        background: rgba(0, 33, 71, 0.9);
       }
       #header {
         flex: 0 0 auto;
@@ -52,7 +53,7 @@
       }
       #column-labels, .row {
         display: grid;
-        grid-template-columns: 30px 176px 98px 80px 80px;
+        grid-template-columns: 30px 164px 82px 80px 80px;
         column-gap: 18px;
         align-items: center;
       }
@@ -63,19 +64,17 @@
         font-size: 13px;
       }
       #rows {
-        flex: 1;
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
-        min-height: 0;
       }
       .row {
-        flex: 1 1 0;
-        max-height: 30px;
-        min-height: 0;
+        flex: 0 0 auto;
+        height: 30px;
         overflow: hidden;
         border-top: 1px solid rgba(255, 255, 255, 0.06);
         font-size: 18px;
-        line-height: 1.25;
+        line-height: 30px;
         font-variant-numeric: tabular-nums;
       }
       .row:first-child {
@@ -92,14 +91,14 @@
         white-space: nowrap;
         text-overflow: ellipsis;
       }
-      .row .time {
+      .row .date {
         color: rgba(255, 255, 255, 0.6);
         font-size: 15px;
       }
       .row .delta {
         font-size: 17px;
       }
-      .time, .acc, .delta {
+      .date, .acc, .delta {
         text-align: right;
       }
       .row .delta.pos {
@@ -121,7 +120,7 @@
         <div id="column-labels">
           <span>#</span>
           <span>PLAYER</span>
-          <span class="time">TIME</span>
+          <span class="date">DATE</span>
           <span class="acc">ACC</span>
           <span class="delta">Δ LIVE</span>
         </div>

@@ -22,5 +22,13 @@
     "description": "Maximum number of ladder rows to show (up to 30), sorted by accuracy.",
     "options": "",
     "value": 10
+  },
+  {
+    "uniqueID": "idleOnly",
+    "type": "checkbox",
+    "title": "Only Show When Idle",
+    "description": "Only show during pause or gaps of more than 2 seconds without notes to press (LN releases ignored).",
+    "options": "",
+    "value": false
   }
 ]

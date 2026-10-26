@@ -7,9 +7,12 @@ import type { HitResultTable } from 'mania-judge';
 import type { JudgeMode } from '../mania-result/accuracy';
 import {
   buildRun,
+  idleRanges,
+  isIdleAt,
   rankRuns,
   resultsAccuracy,
   type LadderRun,
+  type TimeRange,
 } from './ladder';
 import { listLocalReplays, type ReplayRef } from './replays';
 
@@ -22,6 +25,8 @@ const LOAD_LIMIT = 100;
 const cache = {
   stateName: '',
   client: 'stable' as 'stable' | 'lazer',
+  playable: false,
+  paused: false,
   liveTime: 0,
   liveAccuracy: null as number | null,
   loadedKey: '',
@@ -30,11 +35,13 @@ const cache = {
   reload: false,
   loadToken: 0,
   runs: [] as LadderRun[],
+  idleRanges: [] as TimeRange[],
   rowElements: new Map<string, HTMLElement>(),
   settings: {
     serverUrl: 'http://localhost:5048',
     judgeMode: 'auto' as JudgeModeSetting,
     maxReplays: 15,
+    idleOnly: false,
   },
 };
 
@@ -91,6 +98,21 @@ function currentLiveAccuracy(data: WEBSOCKET_V2): number | null {
   return resultsAccuracy(resultCounts, resolveJudgeMode());
 }
 
+/** The bundled v2 typedef has no `game` field, but tosu reports it. */
+function isPaused(data: WEBSOCKET_V2) {
+  const game = (data as { game?: { paused?: boolean } }).game;
+  return game?.paused === true;
+}
+
+/** Whether the idle-only setting lets the overlay show right now. */
+function idleGateOpen() {
+  return !cache.settings.idleOnly || cache.paused || isIdleAt(cache.idleRanges, cache.liveTime);
+}
+
+function refreshVisibility() {
+  setVisible(cache.playable && idleGateOpen());
+}
+
 function formatAccuracy(value: number | null) {
   return value === null ? '--' : `${(value * 100).toFixed(2)}%`;
 }
@@ -113,7 +135,7 @@ function formatPlayedAt(date: Date | null) {
   if (!date) return '--';
 
   const pad = (value: number) => String(value).padStart(2, '0');
-  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
 }
 
 function createCell(className: string) {
@@ -139,7 +161,7 @@ function buildRows() {
     const name = createCell('name');
     name.textContent = run.playerName;
     name.title = run.playerName;
-    const time = createCell('time');
+    const time = createCell('date');
     time.textContent = formatPlayedAt(run.playedAt);
     const accuracy = createCell('acc');
     const delta = createCell('delta');
@@ -251,6 +273,7 @@ async function ensureLoaded(beatmapHash: string, lazerBeatmapHash: string) {
 
   if (!cache.loadedKey.startsWith(`${cache.client}|${beatmapHash}|`)) {
     clearRows();
+    cache.idleRanges = [];
   }
 
   statusPanel.info('正在读取本地 replay…');
@@ -263,6 +286,8 @@ async function ensureLoaded(beatmapHash: string, lazerBeatmapHash: string) {
     if (token !== cache.loadToken) return;
 
     const beatmap = parseBeatmap(beatmapContent);
+    cache.idleRanges = idleRanges(beatmap);
+
     const keyCount = beatmap.difficulty.keyCount;
     const refs = await listLocalReplays(cache.client, beatmapHash, lazerBeatmapHash, LOAD_LIMIT);
     if (token !== cache.loadToken) return;
@@ -329,10 +354,15 @@ function applySettings(message: Record<string, unknown>) {
     next.maxReplays = Math.min(30, Math.max(1, Math.round(maxReplays)));
   }
 
+  if (typeof message.idleOnly === 'boolean') {
+    next.idleOnly = message.idleOnly;
+  }
+
   const changed = (Object.keys(next) as (keyof typeof next)[])
     .some(key => next[key] !== cache.settings[key]);
   const serverChanged = next.serverUrl !== cache.settings.serverUrl;
   const modeChanged = next.judgeMode !== cache.settings.judgeMode;
+  const idleChanged = next.idleOnly !== cache.settings.idleOnly;
 
   cache.settings = next;
   config.baseUrl = next.serverUrl;
@@ -348,6 +378,10 @@ function applySettings(message: Record<string, unknown>) {
     cache.loadingKey = '';
     cache.errorKey = '';
     cache.loadToken++;
+  }
+
+  if (idleChanged) {
+    refreshVisibility();
   }
 
   if (changed) {
@@ -381,12 +415,16 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
     }
 
     const playable = cache.stateName === 'play' && data.beatmap.mode.name === 'mania';
-    setVisible(playable);
+    cache.playable = playable;
+    if (!playable) {
+      setVisible(false);
+      return;
+    }
 
-    if (!playable) return;
-
+    cache.paused = isPaused(data);
     cache.liveTime = data.beatmap.time.live;
     cache.liveAccuracy = currentLiveAccuracy(data);
+    refreshVisibility();
     scheduleRender();
 
     if (data.beatmap.checksum) {

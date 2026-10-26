@@ -28,6 +28,51 @@ export type LadderRow = {
   count: number;
 };
 
+/** A beatmap time range without any note press. */
+export type TimeRange = {
+  start: number;
+  end: number;
+};
+
+/** Gaps shorter than this are not worth showing the overlay for. */
+const MIN_IDLE_GAP_MS = 2000;
+
+/** Hide this long before an idle range ends, so the next note is never covered. */
+const IDLE_HIDE_BEFORE_END_MS = 500;
+
+/**
+ * Idle ranges of a beatmap, sorted by time.
+ *
+ * Only presses count: LN releases are ignored, so holding a note never extends a
+ * busy range.
+ */
+export function idleRanges(beatmap: Beatmap): TimeRange[] {
+  const presses = beatmap.hitObjects
+    .map(hitObject => hitObject.startTime)
+    .sort((left, right) => left - right);
+
+  const ranges: TimeRange[] = [];
+  let previousPress = 0;
+
+  for (const press of presses) {
+    if (press - previousPress > MIN_IDLE_GAP_MS) {
+      ranges.push({ start: previousPress, end: press });
+    }
+    previousPress = press;
+  }
+
+  return ranges;
+}
+
+export function isIdleAt(ranges: TimeRange[], time: number) {
+  for (const range of ranges) {
+    if (time < range.start) return false;
+    if (time < range.end - IDLE_HIDE_BEFORE_END_MS) return true;
+  }
+
+  return false;
+}
+
 export function buildAccuracyTimeline(
   sorted: JudgementV1[],
   accTable: Readonly<HitResultTable<number>>,
