@@ -11,6 +11,7 @@ import {
   isIdleAt,
   rankRuns,
   resultsAccuracy,
+  type DeltaDirection,
   type LadderRun,
   type TimeRange,
 } from './ladder';
@@ -42,6 +43,7 @@ const cache = {
     judgeMode: 'auto' as JudgeModeSetting,
     maxReplays: 15,
     idleOnly: false,
+    deltaDirection: 'liveVsReplay' as DeltaDirection,
   },
 };
 
@@ -180,7 +182,7 @@ function render() {
   liveLabel.textContent = `Live ${formatAccuracy(cache.liveAccuracy)}`;
   if (cache.runs.length === 0) return;
 
-  const rows = rankRuns(cache.runs, cache.liveTime, cache.liveAccuracy);
+  const rows = rankRuns(cache.runs, cache.liveTime, cache.liveAccuracy, cache.settings.deltaDirection);
   for (let index = 0; index < rows.length; index++) {
     const row = rows[index];
     const element = cache.rowElements.get(row.run.key);
@@ -356,6 +358,10 @@ function applySettings(message: Record<string, unknown>) {
 
   if (typeof message.idleOnly === 'boolean') {
     next.idleOnly = message.idleOnly;
+  }
+
+  if (message.deltaDirection === 'liveVsReplay' || message.deltaDirection === 'replayVsLive') {
+    next.deltaDirection = message.deltaDirection;
   }
 
   const changed = (Object.keys(next) as (keyof typeof next)[])

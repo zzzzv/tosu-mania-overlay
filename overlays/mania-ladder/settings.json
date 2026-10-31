@@ -30,5 +30,13 @@
     "description": "Only show during pause or gaps of more than 2 seconds without notes to press (LN releases ignored).",
     "options": "",
     "value": false
+  },
+  {
+    "uniqueID": "deltaDirection",
+    "type": "options",
+    "title": "Delta Direction",
+    "description": "liveVsReplay: live accuracy minus the replay's, so + means the current play is ahead. replayVsLive is the old behaviour.",
+    "options": ["liveVsReplay", "replayVsLive"],
+    "value": "liveVsReplay"
   }
 ]

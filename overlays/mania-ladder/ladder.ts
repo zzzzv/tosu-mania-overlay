@@ -28,6 +28,15 @@ export type LadderRow = {
   count: number;
 };
 
+/**
+ * Direction of the `delta` column.
+ *
+ * - `liveVsReplay` (default): live accuracy minus the replay's accuracy, i.e. how far
+ *   the current play is ahead (+) or behind (-) that replay.
+ * - `replayVsLive`: the old behaviour, replay accuracy minus live accuracy.
+ */
+export type DeltaDirection = 'liveVsReplay' | 'replayVsLive';
+
 /** A beatmap time range without any note press. */
 export type TimeRange = {
   start: number;
@@ -175,16 +184,21 @@ export function resultsAccuracy(
 }
 
 /** Rows sorted by accuracy at `time`, best first; unjudged runs go last. */
-export function rankRuns(runs: LadderRun[], time: number, liveAcc: number | null): LadderRow[] {
+export function rankRuns(
+  runs: LadderRun[],
+  time: number,
+  liveAcc: number | null,
+  deltaDirection: DeltaDirection = 'liveVsReplay',
+): LadderRow[] {
   return runs
     .map((run) => {
       const { accuracy, count } = sampleTimeline(run.timeline, time);
-      return {
-        run,
-        accuracy,
-        delta: accuracy === null || liveAcc === null ? null : accuracy - liveAcc,
-        count,
-      };
+      let delta: number | null = null;
+      if (accuracy !== null && liveAcc !== null) {
+        delta = deltaDirection === 'liveVsReplay' ? liveAcc - accuracy : accuracy - liveAcc;
+      }
+
+      return { run, accuracy, delta, count };
     })
     .sort((left, right) => {
       if (left.accuracy === null && right.accuracy === null) return byPlayedAt(left, right);
