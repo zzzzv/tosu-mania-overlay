@@ -123,13 +123,6 @@ const findLastTimingPoint = (timingPoints: TimingPoint[], time: number): TimingP
   return undefined;
 };
 
-const findLastSvPoint = (svPoints: ScrollVelocityPoint[], time: number): ScrollVelocityPoint | undefined => {
-  for (let i = svPoints.length - 1; i >= 0; i--) {
-    if (svPoints[i].time <= time) return svPoints[i];
-  }
-  return undefined;
-};
-
 export const getNps = (beatmap: Beatmap, countTail: boolean = false) => {
   const endTime = getEndTime(beatmap);
   const seconds = Math.floor(endTime / 1000) + 1;
@@ -152,27 +145,48 @@ export const getNps = (beatmap: Beatmap, countTail: boolean = false) => {
 
 export type SvPoint = [time: number, velocity: number];
 
+type SvEvent = {
+  time: number;
+  multiplier: number;
+  /** 绿线（SV）优先于同一时间点的红线重置 */
+  isSv: boolean;
+};
+
 export const getSv = (beatmap: Beatmap) => {
   const endTime = getEndTime(beatmap);
   const timingPoints = getTimingPoints(beatmap);
   const svPoints = getSvPoints(beatmap);
   const commonBeatLength = timingPoints[0]?.beatLength ?? 500;
+
+  // 红线（非继承时间点）同时也会写入一个 SV=1 的控制点，所以每根红线都会把 SV 重置为 1；
+  // 同一时间点上的绿线优先级更高，会覆盖这次重置。只按绿线递推会把上一段的 SV 带过红线，凭空画出 SV。
+  const events: SvEvent[] = [
+    ...timingPoints.map((tp): SvEvent => ({ time: tp.time, multiplier: 1, isSv: false })),
+    ...svPoints.map((sv): SvEvent => ({ time: sv.time, multiplier: sv.multiplier, isSv: true })),
+  ].sort((a, b) => a.time - b.time || Number(a.isSv) - Number(b.isSv));
+
+  const raw: Record<number, number> = {};
+  let lastVelocity = 1;
+  for (const ev of events) {
+    const tp = findLastTimingPoint(timingPoints, ev.time);
+    const beatLength = tp?.beatLength ?? commonBeatLength;
+    const velocity = (commonBeatLength / beatLength) * ev.multiplier;
+    raw[ev.time] = velocity;
+    lastVelocity = velocity;
+  }
+
+  // 以第一段的速度为基准，匀速谱面就是一条平线（=1），不会因为第一段 BPM/SV 不是默认值而整体抬高
+  const times = Object.keys(raw).map(Number).sort((a, b) => a - b);
+  const base = raw[times[0]] || 1;
+
   const data: Record<number, number> = {};
+  for (const time of times) data[time] = raw[time] / base;
+  if (data[0] === undefined) data[0] = 1;
 
-  for (const tp of timingPoints) {
-    const sv = findLastSvPoint(svPoints, tp.time);
-    data[tp.time] = (commonBeatLength / tp.beatLength) * (sv?.multiplier ?? 1);
-  }
+  // 曲线延伸到谱面结尾，保持当前速度（不要拉回 1，否则会在结尾画出假的 SV）
+  const lastTime = times.length ? times[times.length - 1] : 0;
+  if (endTime > lastTime) data[endTime] = lastVelocity / base;
 
-  for (const sv of svPoints) {
-    const tp = findLastTimingPoint(timingPoints, sv.time);
-    if (tp) {
-      data[sv.time] = (commonBeatLength / tp.beatLength) * sv.multiplier;
-    }
-  }
-  if (!data[0]) data[0] = 1.0;
-  data[endTime] = 1.0;
-  
   const sorted: SvPoint[] = Object.entries(data)
     .map(([time, velocity]): SvPoint => [Number(time), velocity])
     .sort((a, b) => a[0] - b[0]);
