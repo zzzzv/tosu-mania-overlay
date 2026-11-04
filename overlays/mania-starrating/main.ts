@@ -6,14 +6,19 @@ import chroma from 'chroma-js';
 
 let maniaSRData: Record<string, ManiaSRData> | null = null;
 let initPromise: Promise<void> | null = null;
+let lastRender: { beatmapContent: string; md5: string } | null = null;
 
 const ensureManiaSRData = () => {
   if (maniaSRData || initPromise) return;
   initPromise = maniaSr.getManiaSRData().then(data => {
     maniaSRData = data;
     console.log(`[mania-starrating] mania-sr 已加载，共 ${Object.keys(data).length} 个谱面`);
+    // 加载期间已经用本地计算渲染过的谱面要重绘一次，否则这首拿不到 SPM
+    if (lastRender) renderTable(lastRender.beatmapContent, lastRender.md5);
   }).catch(e => {
-    console.log('[mania-starrating] mania-sr 加载失败（将使用本地计算）:', e);
+    console.log('[mania-starrating] mania-sr 加载失败（本次使用本地计算，切歌时重试）:', e);
+    // 置空以便下次切歌时重试（例如服务端稍后才启动）
+    initPromise = null;
   });
 };
 
@@ -26,8 +31,15 @@ const cache = {
 const scale = chroma.scale(['#faea3f', '#ffffff', '#ff5252']).domain([-5, 10, 25]);
 const getColor = (v: number) => scale(v).hex();
 
+/** 从 .osu 内容里读键数（CircleSize），用来判断 SPM 是星级还是等级。 */
+const getKeyCount = (beatmapContent: string): number => {
+  const match = beatmapContent.match(/^CircleSize\s*:\s*([\d.]+)/m);
+  return match ? Number(match[1]) : 0;
+};
+
 const renderTable = async (beatmapContent: string, md5: string) => {
   let data: ManiaSRData;
+  lastRender = { beatmapContent, md5 };
 
   if (maniaSRData && md5 in maniaSRData) {
     data = maniaSRData[md5];
@@ -41,21 +53,30 @@ const renderTable = async (beatmapContent: string, md5: string) => {
     data = await getStarRatingsWithCache(beatmapContent, `sr-${md5}`);
   }
 
-  document.getElementById('sr-nm')!.textContent = data.PPY.NM.toFixed(2);
-  document.getElementById('sr-ht')!.textContent = data.PPY.HT.toFixed(2);
-  document.getElementById('sr-dt')!.textContent = data.PPY.DT.toFixed(2);
+  const spm = data.SPM ?? null;
+  // 只有 7K 的 SPM 是星级；4K/6K 都是等级（Lv），和星级不是一个量纲，不能算 Diff
+  const keyCount = getKeyCount(beatmapContent);
+  const spmIsLevel = keyCount === 4 || keyCount === 6;
 
-  const renderXxy = (id: string, v: number) => {
+  const renderValue = (id: string, v: number) => {
     document.getElementById(id)!.textContent = v > 0 ? v.toFixed(2) : '-';
   };
-  renderXxy('xxy-nm', data.XXY.NM);
-  renderXxy('xxy-ht', data.XXY.HT);
-  renderXxy('xxy-dt', data.XXY.DT);
+  renderValue('sr-nm', data.PPY.NM);
+  renderValue('sr-ht', data.PPY.HT);
+  renderValue('sr-dt', data.PPY.DT);
+  renderValue('xxy-nm', data.XXY.NM);
+  renderValue('xxy-ht', data.XXY.HT);
+  renderValue('xxy-dt', data.XXY.DT);
+  if (spm) {
+    renderValue('spm-nm', spm.NM);
+    renderValue('spm-ht', spm.HT);
+    renderValue('spm-dt', spm.DT);
+  }
 
-  const renderDiff = (id: string, sr: number, xxy: number) => {
+  const renderDiff = (id: string, sr: number, other: number) => {
     const el = document.getElementById(id)!;
-    if (sr > 0 && xxy > 0) {
-      const pct = (xxy - sr) / sr * 100;
+    if (sr > 0 && other > 0) {
+      const pct = (other - sr) / sr * 100;
       el.textContent = `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%`;
       el.style.color = getColor(pct);
     } else {
@@ -66,6 +87,16 @@ const renderTable = async (beatmapContent: string, md5: string) => {
   renderDiff('diff-nm', data.PPY.NM, data.XXY.NM);
   renderDiff('diff-ht', data.PPY.HT, data.XXY.HT);
   renderDiff('diff-dt', data.PPY.DT, data.XXY.DT);
+
+  // SPM 只有服务端数据包才有：没有 SPM 数据时整行隐藏；4K/6K 是等级，只显示数值不显示 Diff
+  document.getElementById('spm-row')!.style.display = spm ? '' : 'none';
+  document.getElementById('spm-label')!.textContent = spmIsLevel ? 'SPM Lv' : 'SPM';
+  document.getElementById('spm-diff-row')!.style.display = spm && !spmIsLevel ? '' : 'none';
+  if (spm && !spmIsLevel) {
+    renderDiff('spm-diff-nm', data.PPY.NM, spm.NM);
+    renderDiff('spm-diff-ht', data.PPY.HT, spm.HT);
+    renderDiff('spm-diff-dt', data.PPY.DT, spm.DT);
+  }
 }
 
 const app = document.getElementById('app')!;
