@@ -1,6 +1,6 @@
 import { applyBeatmapMods, applyLegacyBeatmapMods, parseReplay } from 'osu-mania-io';
 import type { Beatmap, ModdedBeatmap, Replay } from 'osu-mania-io';
-import { beatmapToNoteColumns, calcAccuracy, replayToActionColumns } from 'mania-judge';
+import { calcAccuracy, createOsuData } from 'mania-judge';
 import type { HitResultTable, JudgementV1 } from 'mania-judge';
 import { ACC_TABLES, judgeOsu, normalizeJudgements, type JudgeMode } from '../mania-result/accuracy';
 
@@ -131,14 +131,7 @@ export function buildRun(
 ): LadderRun {
   const replay = parseReplay(new Uint8Array(data), keyCount);
   const effective = applyReplayMods(beatmap, replay);
-  const sorted = normalizeJudgements(judgeOsu({
-    od: effective.difficulty.overallDifficulty,
-    hp: effective.difficulty.hpDrainRate,
-    speedRate: effective.speedMultiplier,
-    windowScale: effective.hitWindowScale,
-    noteColumns: beatmapToNoteColumns(effective),
-    actionColumns: replayToActionColumns(replay.frames, keyCount),
-  }, mode), mode);
+  const sorted = normalizeJudgements(judgeOsu(createOsuData(effective, replay), mode), mode);
   const timeline = buildAccuracyTimeline(sorted, ACC_TABLES[mode]);
 
   const playedAt = replay.playedAt;

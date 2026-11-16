@@ -1,6 +1,6 @@
 import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
-import { beatmapToNoteColumns, replayToActionColumns } from 'mania-judge';
+import { createOsuData } from 'mania-judge';
 import type { OsuData } from 'mania-judge';
 import { parseBeatmap, parseReplay, applyLegacyBeatmapMods } from 'osu-mania-io';
 import { StatusPanel } from '@/status-panel';
@@ -133,14 +133,7 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
     const keyCount = beatmap.difficulty.keyCount;
     const replay = parseReplay(new Uint8Array(scoreBuffer), keyCount);
     const effective = replay.mods !== 0 ? applyLegacyBeatmapMods(beatmap, replay.mods) : beatmap;
-    const osuData = {
-      od: effective.difficulty.overallDifficulty,
-      hp: effective.difficulty.hpDrainRate,
-      speedRate: 'speedMultiplier' in effective ? (effective as any).speedMultiplier : 1,
-      windowScale: 'hitWindowScale' in effective ? (effective as any).hitWindowScale : 1,
-      noteColumns: beatmapToNoteColumns(effective),
-      actionColumns: replayToActionColumns(replay.frames, keyCount),
-    };
+    const osuData = createOsuData(effective, replay);
     clearStatus();
     cache.osuData = osuData;
     renderTimeline();

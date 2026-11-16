@@ -1,5 +1,5 @@
 import { v1, lazer, HIT_RESULTS } from 'mania-judge';
-import type { Action, Columns, HitResultTable, JudgementV1, JudgementV2, OsuData } from 'mania-judge';
+import type { Action, Columns, HitResultTable, HoldJudgementV1, JudgementV1, JudgementV2, OsuData } from 'mania-judge';
 
 /** Judgement system used to evaluate the play. */
 export type JudgeMode = 'v1' | 'lazer';
@@ -17,7 +17,7 @@ type ResetCondition = (current: JudgementV1, next: JudgementV1) => boolean;
 
 /** Judge the play with the selected judgement system. */
 export function judgeOsu(data: OsuData, mode: JudgeMode) {
-  return mode === 'lazer' ? lazer.playOsu(data) : v1.playOsu(data);
+  return mode === 'lazer' ? lazer.playOsu(data) : v1.playOsuFrames(data);
 }
 
 export function compareJudgements(a: JudgementV1, b: JudgementV1) {
@@ -195,8 +195,7 @@ function findBestOffset(osuData: OsuData, mode: JudgeMode, baseAccuracy: number)
 
     for (let step = 1; misses < SEARCH_TOLERANCE && step <= MAX_SEARCH_OFFSET; step++) {
       const offset = direction * step;
-      const shifted = { ...osuData, actionColumns: shiftActions(osuData.actionColumns, offset) };
-      const accuracy = judgementAccuracy(judgeOsu(shifted, mode), mode);
+      const accuracy = judgementAccuracy(judgeOsu(shiftOsuData(osuData, offset), mode), mode);
 
       if (accuracy > bestAccuracy) {
         bestOffset = offset;
@@ -209,6 +208,21 @@ function findBestOffset(osuData: OsuData, mode: JudgeMode, baseAccuracy: number)
   }
 
   return { offset: bestOffset, accuracy: bestAccuracy };
+}
+
+/**
+ * Move the whole replay in time.
+ *
+ * The judgement engine settles objects on the replay's raw frame grid, so the frame
+ * times have to travel with the input edges; shifting only the actions would mix a
+ * moved input with an unmoved grid.
+ */
+function shiftOsuData(osuData: OsuData, offset: number): OsuData {
+  return {
+    ...osuData,
+    actionColumns: shiftActions(osuData.actionColumns, offset),
+    frameTimes: osuData.frameTimes.map((time) => time + offset),
+  };
 }
 
 function shiftActions(actionColumns: Columns<Action>, offset: number): Columns<Action> {
@@ -373,10 +387,21 @@ export function splitSeriesBuilder(
 }
 
 function getOffsets(judgement: JudgementV1) {
-  return v1.isHoldJudgement(judgement)
-    ? [
-        judgement.actions[0].press - judgement.note.start,
-        judgement.actions[judgement.actions.length - 1].release - judgement.note.end,
-      ]
-    : [judgement.exit - judgement.note.start];
+  return (v1.isHoldJudgement(judgement) ? holdOffsets(judgement) : [judgement.exit - judgement.note.start])
+    .filter((offset) => Number.isFinite(offset));
+}
+
+/**
+ * Head and tail offsets of a hold.
+ *
+ * mania-judge stores an LN's action when the key goes down, so a note that is still
+ * held when the replay ends keeps `release: Infinity`, and a note that was never hit
+ * has no action at all. Only the offsets that were really measured are reported.
+ */
+function holdOffsets(judgement: HoldJudgementV1) {
+  const first = judgement.actions[0];
+  const last = judgement.actions[judgement.actions.length - 1];
+  if (!first || !last) return [];
+
+  return [first.press - judgement.note.start, last.release - judgement.note.end];
 }
