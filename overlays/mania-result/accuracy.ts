@@ -1,5 +1,5 @@
 import { v1, lazer, HIT_RESULTS } from 'mania-judge';
-import type { Action, Columns, HitResultTable, HoldJudgementV1, JudgementV1, JudgementV2, OsuData } from 'mania-judge';
+import type { Columns, HitResultTable, HoldJudgementV1, JudgementV1, JudgementV2, OsuData } from 'mania-judge';
 
 /** Judgement system used to evaluate the play. */
 export type JudgeMode = 'v1' | 'lazer';
@@ -17,7 +17,7 @@ type ResetCondition = (current: JudgementV1, next: JudgementV1) => boolean;
 
 /** Judge the play with the selected judgement system. */
 export function judgeOsu(data: OsuData, mode: JudgeMode) {
-  return mode === 'lazer' ? lazer.playOsu(data) : v1.playOsuFrames(data);
+  return mode === 'lazer' ? lazer.playOsu(data) : v1.playOsu(data);
 }
 
 export function compareJudgements(a: JudgementV1, b: JudgementV1) {
@@ -54,7 +54,7 @@ function fromLazer(judgements: Columns<JudgementV2>): JudgementV1[] {
 
   for (const column of judgements) {
     for (const judgement of column) {
-      if (!lazer.isHoldV2(judgement)) {
+      if (!lazer.isHoldJudgement(judgement)) {
         normalized.push(judgement);
         continue;
       }
@@ -213,24 +213,14 @@ function findBestOffset(osuData: OsuData, mode: JudgeMode, baseAccuracy: number)
 /**
  * Move the whole replay in time.
  *
- * The judgement engine settles objects on the replay's raw frame grid, so the frame
- * times have to travel with the input edges; shifting only the actions would mix a
- * moved input with an unmoved grid.
+ * mania-judge 0.5 judges straight off the replay frame rows: the rows are both the
+ * input and the clock, so shifting the whole table is enough to move the play.
  */
 function shiftOsuData(osuData: OsuData, offset: number): OsuData {
   return {
     ...osuData,
-    actionColumns: shiftActions(osuData.actionColumns, offset),
-    frameTimes: osuData.frameTimes.map((time) => time + offset),
+    frames: osuData.frames.map((frame) => ({ time: frame.time + offset, columns: frame.columns })),
   };
-}
-
-function shiftActions(actionColumns: Columns<Action>, offset: number): Columns<Action> {
-  return actionColumns.map((actions) => actions.map((action) => ({
-    column: action.column,
-    press: action.press + offset,
-    release: action.release + offset,
-  })));
 }
 
 function *stepWindows(sorted: JudgementV1[], stepMs: number, windowMs: number) {

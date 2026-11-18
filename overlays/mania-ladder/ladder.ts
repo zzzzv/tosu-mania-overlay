@@ -1,5 +1,5 @@
-import { applyBeatmapMods, applyLegacyBeatmapMods, parseReplay } from 'osu-mania-io';
-import type { Beatmap, ModdedBeatmap, Replay } from 'osu-mania-io';
+import { applyReplayMods, parseReplay } from '@/parsers';
+import type { Beatmap } from 'osu-mania-io';
 import { calcAccuracy, createOsuData } from 'mania-judge';
 import type { HitResultTable, JudgementV1 } from 'mania-judge';
 import { ACC_TABLES, judgeOsu, normalizeJudgements, type JudgeMode } from '../mania-result/accuracy';
@@ -148,23 +148,6 @@ export function buildRun(
     timeline,
     finalAccuracy: timeline.values.length > 0 ? timeline.values[timeline.values.length - 1] : 0,
   };
-}
-
-function applyReplayMods(beatmap: Beatmap, replay: Replay): ModdedBeatmap {
-  const lazerMods = replay.lazer?.mods;
-  if (lazerMods && lazerMods.length > 0) {
-    try {
-      return applyBeatmapMods(beatmap, lazerMods);
-    } catch (error) {
-      console.log('[mania-ladder] failed to apply lazer mods, falling back to legacy mods', error);
-    }
-  }
-
-  if (replay.mods !== 0) {
-    return applyLegacyBeatmapMods(beatmap, replay.mods);
-  }
-
-  return applyBeatmapMods(beatmap, []);
 }
 
 /** Accuracy of a hit-result count table; null when nothing has been judged yet. */

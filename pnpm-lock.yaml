@@ -30,17 +30,17 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1
       mania-judge:
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^0.5.0
+        version: 0.5.0
       osu-mania-io:
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       osu-stable-db:
         specifier: ^0.2.5
         version: 0.2.5
       rosu-pp-js:
-        specifier: https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz
-        version: https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz
+        specifier: https://github.com/MaxOhn/rosu-pp-js/releases/download/v4.0.1/rosu_pp_js_web.tar.gz
+        version: https://github.com/MaxOhn/rosu-pp-js/releases/download/v4.0.1/rosu_pp_js_web.tar.gz
       xxysr-wasm:
         specifier: 0.1.4
         version: 0.1.4
@@ -942,8 +942,8 @@ packages:
   mania-image@0.1.1:
     resolution: {integrity: sha512-kAsm9hvFSGuZ8U7kh8MBmGCCLzS08rVfbRBf277sJ3a8/MxK82kHFS9ypjbgHGSYpeScDSdUSYK8khhN9iUGaQ==}
 
-  mania-judge@0.4.1:
-    resolution: {integrity: sha512-TTR1oyrJCS8ImmtOECksizEyEGgLDPNajFzo+NvyLACmaaWAc9hkxnrasQVajS2uqs/m8aKf5Ei9yif8h7sB5g==}
+  mania-judge@0.5.0:
+    resolution: {integrity: sha512-VdPBVEt3Y5qBP58FaxajF9d9Yze4umV8vY1/avAF9VqIzUU6ndIWhESGWI7kf000Vn6RJy7qnUSS6BmPdtDDsg==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -1003,8 +1003,9 @@ packages:
   osu-classes@3.2.0-beta.0:
     resolution: {integrity: sha512-w7t1tqDoeQJM3IorPs0CXadcxZ5kx/hC/LwcJMVhD9zLZOTnTVjADKkRS5a0VvzPmCKeec1sAQYFNHoNgN5z7A==}
 
-  osu-mania-io@0.1.0:
-    resolution: {integrity: sha512-naiCcRaNYJmosdSb7bTonDmwpLu/psQ1S1Vk6o7H/79A8w4dE1ayTgkWfwNap5yGRpbVSz7REvzSJyNQMFal/Q==}
+  osu-mania-io@1.0.0:
+    resolution: {integrity: sha512-MBMJN5mNHae2ucjJgNXA4rI2z28UFHspnWvVrd7VQfvG++zlbDqjRWDBHl2mN75fD9P9SgWMAQXxU6noCO4YTQ==}
+    engines: {node: '>=18'}
 
   osu-mania-stable@5.0.1:
     resolution: {integrity: sha512-Zqzqi3LAYkUaUCDIjLAhXpxanVlTkLp2mwfYg4mdjPz+Y8HsigidzfZZo0ykg9sVmSTIEQHGG4UCRW72ehAHWA==}
@@ -1141,6 +1142,10 @@ packages:
   rosu-pp-js@https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz:
     resolution: {integrity: sha512-gCL519sWsKFY7ZHpDKmjlkggUtHnIDDv9RJguis7vX53CR2OSkGTBEACHwzZGbkOuUbXvbm0ZOzoXg27t1BnHQ==, tarball: https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz}
     version: 3.1.0
+
+  rosu-pp-js@https://github.com/MaxOhn/rosu-pp-js/releases/download/v4.0.1/rosu_pp_js_web.tar.gz:
+    resolution: {integrity: sha512-My9bOuhwdSt9bqIJCd3qB6p119TEIAj68SpZ+A2Af+pXzATqMa110MCbimeMdAu/yuwaCHDhUVwoYhOwBzkycQ==, tarball: https://github.com/MaxOhn/rosu-pp-js/releases/download/v4.0.1/rosu_pp_js_web.tar.gz}
+    version: 4.0.1
 
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -2206,7 +2211,7 @@ snapshots:
 
   mania-image@0.1.1: {}
 
-  mania-judge@0.4.1: {}
+  mania-judge@0.5.0: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -2285,7 +2290,7 @@ snapshots:
 
   osu-classes@3.2.0-beta.0: {}
 
-  osu-mania-io@0.1.0:
+  osu-mania-io@1.0.0:
     dependencies:
       dotnet-random-ts: 0.1.0
       lzma-js-simple-v2: 1.2.3
@@ -2453,6 +2458,8 @@ snapshots:
       fsevents: 2.3.3
 
   rosu-pp-js@https://github.com/MaxOhn/rosu-pp-js/releases/download/v3.1.0/rosu_pp_js_web.tar.gz: {}
+
+  rosu-pp-js@https://github.com/MaxOhn/rosu-pp-js/releases/download/v4.0.1/rosu_pp_js_web.tar.gz: {}
 
   safe-buffer@5.1.2: {}
 

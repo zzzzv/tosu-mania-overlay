@@ -2,7 +2,7 @@ import WebSocketManager, { type WEBSOCKET_V2 } from '@/lib/socket';
 import { get, set } from 'idb-keyval';
 import { createOsuData } from 'mania-judge';
 import type { OsuData } from 'mania-judge';
-import { parseBeatmap, parseReplay, applyLegacyBeatmapMods } from 'osu-mania-io';
+import { applyReplayMods, parseBeatmap, parseReplay } from '@/parsers';
 import { StatusPanel } from '@/status-panel';
 import { judgeOsu, summarize, type JudgeMode } from './accuracy';
 import { updateColumns, updateSummary, updateTimeline } from './charts';
@@ -132,8 +132,7 @@ socket.api_v2(async (data: WEBSOCKET_V2) => {
     const beatmap = parseBeatmap(beatmapContent);
     const keyCount = beatmap.difficulty.keyCount;
     const replay = parseReplay(new Uint8Array(scoreBuffer), keyCount);
-    const effective = replay.mods !== 0 ? applyLegacyBeatmapMods(beatmap, replay.mods) : beatmap;
-    const osuData = createOsuData(effective, replay);
+    const osuData = createOsuData(applyReplayMods(beatmap, replay), replay);
     clearStatus();
     cache.osuData = osuData;
     renderTimeline();

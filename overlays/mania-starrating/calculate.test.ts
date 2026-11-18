@@ -13,7 +13,7 @@ const fixtureDir = path.join(FIXTURE_ROOT, 'score-635785967');
 test('SR', async () => {
   const wasmPath = require.resolve('rosu-pp-js/rosu_pp_js_bg.wasm');
   const wasmBuffer = await readFile(wasmPath);
-  await ensureRosuInitialized(wasmBuffer);
+  await ensureRosuInitialized({ module_or_path: wasmBuffer });
 
   const text = await readFile(`${fixtureDir}/beatmap.osu`, 'utf-8');
   const sr = await calculateRosuSR(text);
